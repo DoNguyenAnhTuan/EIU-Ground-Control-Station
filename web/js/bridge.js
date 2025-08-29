@@ -53,6 +53,9 @@ export function initBridge(signalHandlers) {
         get(t, p) { return (p in api) ? api[p] : t[p]; }
       });
 
+      // Expose bridge to global scope for view manager
+      window.bridge = merged;
+
       resolve(merged);
     });
   });

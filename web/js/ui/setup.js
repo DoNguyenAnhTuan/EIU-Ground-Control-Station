@@ -2,6 +2,12 @@
 export function initSetupOverlay(bridge) {
   console.log('initSetupOverlay called with bridge:', bridge);
   
+  // Prevent multiple initializations
+  if (window.setupOverlayInitialized) {
+    console.log('Setup overlay already initialized, skipping...');
+    return;
+  }
+  
   const overlay = document.getElementById('setupFull');
   const backBtn = document.getElementById('setupBack');
   const titleEl = document.getElementById('setupTitle');
@@ -840,4 +846,7 @@ export function initSetupOverlay(bridge) {
       console.log('Test button not found');
     }
   }, 1000);
+  
+  // Mark as initialized
+  window.setupOverlayInitialized = true;
 }

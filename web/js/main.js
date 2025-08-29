@@ -270,6 +270,8 @@ function wireUI(mapInstance) {
   console.log('UI events wired successfully');
 }
 
+
+
 // Main boot function
 (async function boot(){
   console.log('Starting GCS application...');
@@ -336,6 +338,8 @@ function wireUI(mapInstance) {
       try {
         initSetupOverlay(bridge);
         console.log('Setup overlay initialized successfully');
+        // Expose to global scope for view manager
+        window.initSetupOverlay = initSetupOverlay;
       } catch (error) {
         console.error('Error initializing setup overlay:', error);
       }
@@ -348,6 +352,8 @@ function wireUI(mapInstance) {
       try {
         initSettingsOverlay(bridge);
         console.log('Settings overlay initialized successfully');
+        // Expose to global scope for view manager
+        window.initSettingsOverlay = initSettingsOverlay;
       } catch (error) {
         console.error('Error initializing settings overlay:', error);
       }
@@ -357,7 +363,58 @@ function wireUI(mapInstance) {
     
     console.log('GCS application started successfully!');
     
+    // Initialize flight widgets
+    initFlightWidgets();
+    
   } catch (error) {
     console.error('Failed to start GCS application:', error);
   }
 })();
+
+// Flight Widgets Management
+function initFlightWidgets() {
+  console.log('Initializing flight widgets...');
+  
+  // Update Flight Widgets
+  function updateFlightWidgets() {
+    // Update speed widget
+    const speedValue = document.getElementById('speedValue');
+    if (speedValue) {
+      const speed = Math.random() * 15 + 2; // Demo speed 2-17 m/s
+      speedValue.textContent = speed.toFixed(1);
+    }
+
+    // Update altitude widget
+    const altitudeValue = document.getElementById('altitudeValue');
+    if (altitudeValue) {
+      const altitude = Math.random() * 100 + 25; // Demo altitude 25-125m
+      altitudeValue.textContent = altitude.toFixed(1);
+    }
+
+    // Update compass widget
+    const compassNeedle = document.getElementById('compassNeedle');
+    const headingValue = document.getElementById('headingValue');
+    if (compassNeedle && headingValue) {
+      const heading = Math.random() * 360; // Demo heading 0-360°
+      compassNeedle.style.transform = `translateX(-50%) rotate(${heading}deg)`;
+      headingValue.textContent = `${Math.round(heading)}°`;
+    }
+
+    // Update battery widget
+    const batteryFill = document.getElementById('batteryFill');
+    const batteryValue = document.getElementById('batteryValue');
+    if (batteryFill && batteryValue) {
+      const battery = Math.random() * 40 + 60; // Demo battery 60-100%
+      batteryFill.style.width = `${battery}%`;
+      batteryValue.textContent = `${Math.round(battery)}%`;
+    }
+  }
+
+  // Start updating widgets every second
+  setInterval(updateFlightWidgets, 1000);
+  
+  // Initial update
+  updateFlightWidgets();
+  
+  console.log('Flight widgets initialized successfully');
+}

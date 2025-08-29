@@ -68,8 +68,8 @@ class MainWindow(QMainWindow):
         self.channel.registerObject("bridge", self.bridge)
         self.browser.page().setWebChannel(self.channel)
 
-        # 4) Load index.html
-        QTimer.singleShot(300, lambda: self.browser.load(QUrl("http://localhost:8000/index.html")))
+        # 4) Load login.html first
+        QTimer.singleShot(300, lambda: self.browser.load(QUrl("http://localhost:8000/login.html")))
 
         # 5) Replace placeholder
         placeholder = self.findChild(QWidget, "load_map_widget")

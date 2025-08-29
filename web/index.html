@@ -16,9 +16,8 @@
   <!-- Qt webchannel -->
   <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
 </head>
-<body>
-
-  <!-- ========= Sidebar (vertical 4 views) ========= -->
+  <body>
+    <!-- ========= Sidebar (vertical 4 views) ========= -->
   <aside id="sidebar" class="sidebar">
     <!-- Logo -->
     <div class="sb-logo">
@@ -91,19 +90,78 @@
           <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
         </button>
       </div>
+      
+      <!-- Flight Widgets Overlay -->
+      <div class="flight-widgets">
+        <!-- Speed Widget -->
+        <div class="widget speed-widget">
+          <div class="widget-header">
+            <span class="widget-icon">⚡</span>
+            <span class="widget-title">Speed</span>
+          </div>
+          <div class="widget-content">
+            <div class="speed-gauge">
+              <div class="speed-value" id="speedValue">0.0</div>
+              <div class="speed-unit">m/s</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Altitude Widget -->
+        <div class="widget altitude-widget">
+          <div class="widget-header">
+            <span class="widget-icon">📈</span>
+            <span class="widget-title">Altitude</span>
+          </div>
+          <div class="widget-content">
+            <div class="altitude-display">
+              <div class="altitude-value" id="altitudeValue">0.0</div>
+              <div class="altitude-unit">m</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Compass Widget -->
+        <div class="widget compass-widget">
+          <div class="widget-header">
+            <span class="widget-icon">🧭</span>
+            <span class="widget-title">Heading</span>
+          </div>
+          <div class="widget-content">
+            <div class="compass-display">
+              <div class="compass-rose">
+                <div class="compass-needle" id="compassNeedle"></div>
+                <div class="compass-labels">
+                  <span class="compass-label n">N</span>
+                  <span class="compass-label e">E</span>
+                  <span class="compass-label s">S</span>
+                  <span class="compass-label w">W</span>
+                </div>
+              </div>
+              <div class="heading-value" id="headingValue">0°</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Battery Widget -->
+        <div class="widget battery-widget">
+          <div class="widget-header">
+            <span class="widget-icon">🔋</span>
+            <span class="widget-title">Battery</span>
+          </div>
+          <div class="widget-content">
+            <div class="battery-display">
+              <div class="battery-bar">
+                <div class="battery-fill" id="batteryFill"></div>
+              </div>
+              <div class="battery-value" id="batteryValue">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <!-- HUD Overlay -->
-    <div id="hud-overlay" class="hud-overlay">
-      <div class="hud-item">
-        <span class="hud-label">Mode:</span>
-        <span id="hudMode" class="hud-value">--</span>
-      </div>
-      <div class="hud-item">
-        <span class="hud-label">Link:</span>
-        <span id="hudValue" class="hud-value">--</span>
-      </div>
-    </div>
+    
   </main>
 
   <!-- ========= Setup Overlay ========= -->

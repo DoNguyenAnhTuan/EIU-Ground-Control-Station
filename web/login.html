@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Ground Control Station</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
+      animation: shimmer 4s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .login-logo-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #1abc9c, #3498db);
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(26, 188, 156, 0.3);
+    }
+
+    .login-logo-text h1 {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-logo-text p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 8px 0 0 0;
+      font-weight: 500;
+    }
+
+    .login-form {
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      font-size: 18px;
+      color: #64748b;
+      z-index: 1;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .input-wrapper input::placeholder {
+      color: #64748b;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: #3b82f6;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked + .checkmark {
+      background: #3b82f6;
+      border-color: #3b82f6;
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked + .checkmark::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .forgot-password {
+      color: #3b82f6;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .forgot-password:hover {
+      color: #60a5fa;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .login-divider {
+      text-align: center;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .login-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .login-divider span {
+      background: rgba(15, 23, 42, 0.8);
+      padding: 0 16px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .quick-login {
+      display: flex;
+      gap: 12px;
+    }
+
+    .quick-login-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quick-login-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .demo-btn:hover {
+      background: rgba(26, 188, 156, 0.1);
+      border-color: #1abc9c;
+    }
+
+    .guest-btn:hover {
+      background: rgba(52, 152, 219, 0.1);
+      border-color: #3498db;
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-footer p {
+      color: #64748b;
+      font-size: 12px;
+      margin: 0 0 12px 0;
+    }
+
+    .login-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .login-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.3s ease;
+    }
+
+    .login-links a:hover {
+      color: #3b82f6;
+    }
+
+    .login-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10001;
+      animation: slideInRight 0.3s ease;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-notification.error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .login-notification.success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .notification-icon {
+      font-size: 18px;
+    }
+
+    .notification-text {
+      font-size: 14px;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .credentials-info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .credentials-info h3 {
+      color: #3b82f6;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .credentials-info p {
+      color: #94a3b8;
+      font-size: 12px;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo">
+        <img src="assets/img/logo-fablab.png" alt="GCS Logo" class="login-logo-img">
+        <div class="login-logo-text">
+          <h1>EIU FabLab Ground Control Station</h1>
+          <p>Professional Drone Management System</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- <div class="credentials-info">
+      <h3>Demo Credentials</h3>
+      <p>Username: <strong>tuan</strong> | Password: <strong>tuan</strong></p>
+    </div> -->
+    
+    <div class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="password-toggle" id="passwordToggle">👁️</button>
+        </div>
+      </div>
+      
+      <div class="form-options">
+        <label class="checkbox-wrapper">
+          <input type="checkbox" id="rememberMe">
+          <span class="checkmark"></span>
+          Remember me
+        </label>
+        <a href="#" class="forgot-password">Forgot password?</a>
+      </div>
+      
+      <button type="button" class="login-btn" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loading" hidden>
+          <div class="spinner"></div>
+          Signing in...
+        </span>
+      </button>
+      
+      <div class="login-divider">
+        <span>or</span>
+      </div>
+      
+      <div class="quick-login">
+        <button type="button" class="quick-login-btn demo-btn" data-username="tuan" data-password="tuan">
+          <!-- <span class="btn-icon">🚁</span> -->
+          Quick Login
+        </button>
+        <button type="button" class="quick-login-btn guest-btn" data-username="guest" data-password="guest123">
+          <!-- <span class="btn-icon">👤</span> -->
+          Guest Access
+        </button>
+      </div>
+    </div>
+    
+    <div class="login-footer">
+      <p>&copy; 2024 Ground Control Station. All rights reserved.</p>
+      <div class="login-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Login Management
+    let isLoggedIn = false;
+    let currentUser = null;
+
+    function initLogin() {
+      console.log('Initializing login system...');
+      
+      const loginBtn = document.getElementById('loginBtn');
+      const passwordToggle = document.getElementById('passwordToggle');
+      const passwordInput = document.getElementById('password');
+      const quickLoginBtns = document.querySelectorAll('.quick-login-btn');
+      
+      // Check if user is already logged in
+      const savedUser = localStorage.getItem('gcs_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          isLoggedIn = true;
+          redirectToMain();
+          console.log('User already logged in:', currentUser);
+        } catch (error) {
+          console.error('Error parsing saved user:', error);
+          localStorage.removeItem('gcs_user');
+        }
+      }
+      
+      // Password toggle
+      if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', () => {
+          const type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+          passwordToggle.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+      }
+      
+      // Login button
+      if (loginBtn) {
+        loginBtn.addEventListener('click', handleLogin);
+      }
+      
+      // Quick login buttons
+      quickLoginBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const username = btn.dataset.username;
+          const password = btn.dataset.password;
+          
+          document.getElementById('username').value = username;
+          document.getElementById('password').value = password;
+          
+          handleLogin();
+        });
+      });
+      
+      // Enter key support
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !isLoggedIn) {
+          handleLogin();
+        }
+      });
+      
+      console.log('Login system initialized');
+    }
+
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const rememberMe = document.getElementById('rememberMe').checked;
+      
+      if (!username || !password) {
+        showLoginError('Please enter both username and password');
+        return;
+      }
+      
+      // Show loading state
+      const loginBtn = document.getElementById('loginBtn');
+      const btnText = loginBtn.querySelector('.btn-text');
+      const btnLoading = loginBtn.querySelector('.btn-loading');
+      
+      btnText.hidden = true;
+      btnLoading.hidden = false;
+      loginBtn.disabled = true;
+      
+      // Simulate login process
+      setTimeout(() => {
+        // Demo credentials - tuan/tuan
+        const validCredentials = {
+          'tuan': 'tuan',
+          'admin': 'admin123',
+          'demo': 'demo123',
+          'guest': 'guest123',
+          'pilot': 'pilot123'
+        };
+        
+        if (validCredentials[username] === password) {
+          // Login successful
+          currentUser = {
+            username: username,
+            role: username === 'admin' ? 'Administrator' : 
+                  username === 'demo' ? 'Demo User' : 
+                  username === 'pilot' ? 'Pilot' : 
+                  username === 'tuan' ? 'Tuan User' : 'Guest',
+            loginTime: new Date().toISOString()
+          };
+          
+          isLoggedIn = true;
+          
+          if (rememberMe) {
+            localStorage.setItem('gcs_user', JSON.stringify(currentUser));
+          }
+          
+          showLoginSuccess();
+          redirectToMain();
+          
+          console.log('Login successful:', currentUser);
+        } else {
+          // Login failed
+          showLoginError('Invalid username or password');
+          
+          // Reset button state
+          btnText.hidden = false;
+          btnLoading.hidden = true;
+          loginBtn.disabled = false;
+        }
+      }, 1500);
+    }
+
+    function redirectToMain() {
+      // Redirect to main application
+      window.location.href = 'index.html';
+    }
+
+    function showLoginError(message) {
+      // Create error notification
+      const notification = document.createElement('div');
+      notification.className = 'login-notification error';
+      notification.innerHTML = `
+        <span class="notification-text">${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 4000);
+    }
+
+    function showLoginSuccess() {
+      // Create success notification
+      const notification = document.createElement('div');
+      notification.className = 'login-notification success';
+      notification.innerHTML = `
+        <span class="notification-text">Welcome back, ${currentUser.username}!</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 2000);
+    }
+
+    // Initialize login when page loads
+    document.addEventListener('DOMContentLoaded', initLogin);
+  </script>
+</body>
+</html>

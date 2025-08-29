@@ -18,8 +18,8 @@ class ViewManager {
     // Bind navigation events
     this.bindNavigation();
     
-    // Load view mặc định
-    await this.showView('plan');
+    // Không auto load view mặc định - chỉ hiển thị 4 tính năng chính
+    // await this.showView('plan');
     
     console.log('ViewManager: Initialization complete');
   }
@@ -68,6 +68,10 @@ class ViewManager {
     // Ẩn tất cả views
     this.viewContainer.innerHTML = '';
     this.currentView = null;
+    
+    // Reset overlay initialization flags when views change
+    window.setupOverlayInitialized = false;
+    window.settingsOverlayInitialized = false;
   }
 
   toggleView(viewName) {
@@ -214,9 +218,16 @@ class ViewManager {
     // Khởi tạo logic cho Setup view
     console.log('ViewManager: Initializing Setup view...');
     
-    // The setup view is now handled by the setup overlay
-    // The setup menu items will trigger the overlay to open
-    // This is handled in setup.js
+    // Re-initialize setup overlay when view is loaded
+    if (window.initSetupOverlay && window.bridge) {
+      console.log('ViewManager: Re-initializing setup overlay...');
+      try {
+        window.initSetupOverlay(window.bridge);
+        console.log('ViewManager: Setup overlay re-initialized successfully');
+      } catch (error) {
+        console.error('ViewManager: Error re-initializing setup overlay:', error);
+      }
+    }
     
     // Update setup menu status dots based on vehicle state
     this.updateSetupStatus();
@@ -260,17 +271,15 @@ class ViewManager {
     // Khởi tạo logic cho Settings view
     console.log('ViewManager: Initializing Settings view...');
     
-    // Bind settings menu events
-    const settingsMenu = document.querySelector('#view-settings .menu-list');
-    if (settingsMenu) {
-      settingsMenu.addEventListener('click', (e) => {
-        const menuItem = e.target.closest('.menu-item');
-        if (menuItem) {
-          const settingType = menuItem.dataset.seting;
-          console.log(`Setting ${settingType} clicked`);
-          // Logic xử lý settings
-        }
-      });
+    // Re-initialize settings overlay when view is loaded
+    if (window.initSettingsOverlay && window.bridge) {
+      console.log('ViewManager: Re-initializing settings overlay...');
+      try {
+        window.initSettingsOverlay(window.bridge);
+        console.log('ViewManager: Settings overlay re-initialized successfully');
+      } catch (error) {
+        console.error('ViewManager: Error re-initializing settings overlay:', error);
+      }
     }
   }
 

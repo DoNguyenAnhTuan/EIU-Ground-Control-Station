@@ -2,6 +2,12 @@
 export function initSettingsOverlay(bridge) {
   console.log('initSettingsOverlay called with bridge:', bridge);
   
+  // Prevent multiple initializations
+  if (window.settingsOverlayInitialized) {
+    console.log('Settings overlay already initialized, skipping...');
+    return;
+  }
+  
   const overlay = document.getElementById('settingsFull');
   const backBtn = document.getElementById('settingsBack');
   const titleEl = document.getElementById('settingsTitle');
@@ -604,4 +610,7 @@ export function initSettingsOverlay(bridge) {
       console.log('Test button not found');
     }
   }, 1000);
+  
+  // Mark as initialized
+  window.settingsOverlayInitialized = true;
 }

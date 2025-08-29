@@ -119,19 +119,69 @@
 /* === Layout tweak: sidebar hẹp hơn chút cho đỡ “to” === */
 :root{ --sidebar-w: 300px; } /* trước là 340px */
 
+
+
 /* === Logo block === */
 .sb-logo{
-  display:flex; align-items:center; gap:12px;
-  padding:8px 10px; margin-bottom:12px;
-  background:#1a1f28; border:1px solid var(--line); border-radius:12px;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 20px; margin-bottom:20px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 2px solid #3b82f6;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+  position: relative;
+  overflow: hidden;
 }
+
+.sb-logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .sb-logo img{
-  width:36px; height:36px; object-fit:contain; border-radius:8px;
-  background:#0b1220;
+  width:48px; height:48px; object-fit:contain; border-radius:12px;
+  background: linear-gradient(135deg, #1abc9c, #3498db);
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(26, 188, 156, 0.3);
+  position: relative;
+  z-index: 1;
 }
-.sb-logo-text{ line-height:1.1; }
-.sb-logo-text strong{ display:block; font-size:14px; letter-spacing:.3px; }
-.sb-logo-text span{ display:block; font-size:11px; color:#9fb0c4; }
+
+.sb-logo-text{ 
+  line-height:1.2; 
+  position: relative;
+  z-index: 1;
+}
+
+.sb-logo-text strong{ 
+  display:block; 
+  font-size:18px; 
+  font-weight: 800;
+  letter-spacing:.5px; 
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 4px;
+}
+
+.sb-logo-text span{ 
+  display:block; 
+  font-size:12px; 
+  color:#60a5fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 /* === 4 nút tính năng: to, dọc, nổi bật === */
 .nav-rail--xl{ gap:10px; margin-bottom:16px; }
@@ -176,4 +226,202 @@
 .callout.warn{
   border:1px solid #7a2e2e; background:#2a1717; color:#fecaca;
   padding:10px 12px; border-radius:10px; margin-top:10px;
+}
+
+/* Flight Widgets */
+.flight-widgets {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.widget {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 120px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.widget-icon {
+  font-size: 16px;
+}
+
+.widget-title {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.widget-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Speed Widget */
+.speed-gauge {
+  text-align: center;
+}
+
+.speed-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1abc9c;
+  line-height: 1;
+}
+
+.speed-unit {
+  font-size: 10px;
+  color: #9bb0c7;
+  margin-top: 2px;
+}
+
+/* Altitude Widget */
+.altitude-display {
+  text-align: center;
+}
+
+.altitude-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3498db;
+  line-height: 1;
+}
+
+.altitude-unit {
+  font-size: 10px;
+  color: #9bb0c7;
+  margin-top: 2px;
+}
+
+/* Compass Widget */
+.compass-display {
+  text-align: center;
+}
+
+.compass-rose {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 8px;
+}
+
+.compass-needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 25px;
+  background: #e74c3c;
+  transform-origin: 50% 0;
+  transform: translateX(-50%) rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.compass-needle::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 8px solid #e74c3c;
+}
+
+.compass-labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.compass-label {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.compass-label.n {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-label.e {
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.compass-label.s {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-label.w {
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
+}
+
+.heading-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Battery Widget */
+.battery-display {
+  text-align: center;
+}
+
+.battery-bar {
+  width: 40px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
+  margin: 0 auto 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.battery-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.battery-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
 }
