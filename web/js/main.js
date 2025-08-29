@@ -1,452 +1,342 @@
-// main.js - Main application logic
-import { ViewManager } from './view-manager.js';
-import { Bridge } from './bridge.js';
+// main.js
+import { getAzureKey, ORIGIN } from "./config.js";
+import { initBridge } from "./bridge.js";
+import { initMap, addHtmlMarker, setStyle, cameraTo } from "./map-core.js";
+import { initViewManager } from "./view-manager.js";
+import * as tel from "./telemetry.js";
+import * as mission from "./mission.js";
+import { enuToLatLon, llDistanceMeters, rafThrottle } from "./utils.js";
+import { initSetupOverlay } from "./ui/setup.js";
 
-// Global variables
-let viewManager;
-let bridge;
-let map;
-let mission = null;
-let waypoints = [];
-let waypointMarkers = [];
+let bridge = null;
+let droneMarker = null, droneEl = null, lastLL = null;
+let viewManager = null;
+let map = null;
 
-// Initialize the application
-async function boot() {
-  try {
-    console.log('🚀 Starting GCS application...');
-    
-    // Initialize ViewManager first
-    viewManager = new ViewManager();
-    await viewManager.init();
-    
-    // Initialize Bridge
-    bridge = new Bridge();
-    await bridge.init();
-    
-    // Initialize map
-    await initMap();
-    
-    // Initialize UI events
-    initUIEvents();
-    
-    // Initialize sidebar collapse
-    initSidebarCollapse();
-    
-    // Initialize map click events
-    initMapClickEvents();
-    
-    console.log('✅ GCS application started successfully!');
-    
-  } catch (error) {
-    console.error('❌ Failed to start GCS application:', error);
-  }
+function getOrCreateDroneMarker(){
+  if (droneMarker) return droneMarker;
+  const c = document.createElement('div');
+  c.style.position = 'relative';
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox","0 0 40 40");
+  svg.style.width = "28px";
+  svg.style.height = "28px";
+  svg.innerHTML = `
+    <g class="drone-arrow" transform="rotate(0 20 20)">
+      <polygon points="20,3 25,17 20,14 15,17" fill="#1abc9c"/>
+      <circle cx="20" cy="20" r="6" fill="#ffffff" opacity=".9"/>
+    </g>`;
+  c.appendChild(svg);
+  droneEl = c;
+  droneMarker = addHtmlMarker([ORIGIN.lon, ORIGIN.lat], c);
+  return droneMarker;
 }
 
-// Initialize map
-async function initMap() {
-  try {
-    // Wait for Azure Maps to load
-    await new Promise(resolve => {
-      if (window.atlas) {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
-    });
-
-    // Get map key from bridge
-    const mapKey = await bridge.getMapKey();
-    
-    // Initialize map
-    map = new atlas.Map('myMap', {
-      center: [106.6297, 10.8231], // Ho Chi Minh City
-      zoom: 12,
-      language: 'en-US',
-      authOptions: {
-        authType: 'subscription-key',
-        subscriptionKey: mapKey
-      }
-    });
-
-    // Add map controls
-    map.controls.add([
-      new atlas.control.ZoomControl(),
-      new atlas.control.CompassControl(),
-      new atlas.control.PitchControl(),
-      new atlas.control.StyleControl()
-    ], {
-      position: 'top-right'
-    });
-
-    console.log('🗺️ Map initialized successfully');
-    
-  } catch (error) {
-    console.error('❌ Failed to initialize map:', error);
+const updateDroneLocal = rafThrottle(()=>{
+  const m = getOrCreateDroneMarker();
+  const next = enuToLatLon(
+    mission.state.lastLocal.x,
+    mission.state.lastLocal.y,
+    mission.state.lastLocal.z,
+    ORIGIN.lat, ORIGIN.lon
+  );
+  if (lastLL && llDistanceMeters(lastLL, next) < 0.5) return;
+  lastLL = next;
+  m.setOptions({ position: next });
+  if (droneEl){
+    const L = mission.state.lastLocal;
+    droneEl.title = `LOCAL\nx:${L.x.toFixed(2)} y:${L.y.toFixed(2)} z:${L.z.toFixed(2)}`;
   }
-}
+});
 
-// Initialize UI events
-function initUIEvents() {
-  console.log('🔌 Initializing UI events...');
-  
-  // Wire navigation buttons - FIXED CLICK FUNCTIONALITY
-  const navButtons = document.querySelectorAll('.nav-btn');
-  console.log(`Found ${navButtons.length} navigation buttons`);
-  
-  navButtons.forEach((btn, index) => {
-    console.log(`Wiring button ${index + 1}: ${btn.getAttribute('data-view')}`);
-    
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const view = btn.getAttribute('data-view');
-      console.log(`Navigation button clicked: ${view}`);
-      
-      if (viewManager) {
-        // Remove active class from all buttons
-        navButtons.forEach(b => b.classList.remove('active'));
-        // Add active class to clicked button
-        btn.classList.add('active');
-        
-        // Toggle the view
-        viewManager.toggleView(view);
-        console.log(`View toggled to: ${view}`);
-      } else {
-        console.warn('ViewManager not available');
-      }
-    });
-  });
-
-  // Wire map control buttons
-  const centerOnDroneBtn = document.getElementById('centerOnDroneBtn');
-  if (centerOnDroneBtn) {
-    centerOnDroneBtn.addEventListener('click', () => {
-      if (map && bridge.dronePosition) {
-        map.setCamera({
-          center: [bridge.dronePosition.lng, bridge.dronePosition.lat],
-          zoom: 16
-        });
-      }
-    });
+const updateDroneGPS = rafThrottle(()=>{
+  const m = getOrCreateDroneMarker();
+  const next = [mission.state.lastGPS.lon, mission.state.lastGPS.lat];
+  if (lastLL && llDistanceMeters(lastLL, next) < 0.5) return;
+  lastLL = next;
+  m.setOptions({ position: next });
+  if (droneEl){
+    const G = mission.state.lastGPS;
+    droneEl.title = `GPS\nlat:${G.lat.toFixed(6)} lon:${G.lon.toFixed(6)} alt:${G.alt.toFixed(1)}`;
   }
+});
 
-  const satelliteBtn = document.getElementById('satelliteBtn');
-  if (satelliteBtn) {
-    satelliteBtn.addEventListener('click', () => {
-      if (map) {
-        const currentStyle = map.getStyle();
-        const newStyle = currentStyle === 'satellite' ? 'road' : 'satellite';
-        map.setStyle(newStyle);
-      }
-    });
-  }
-
-  // Wire Plan view specific buttons
-  wirePlanViewButtons();
-  
-  console.log('✅ UI events initialized successfully');
-}
-
-// Wire Plan view specific buttons
-function wirePlanViewButtons() {
-  // Map style selector
-  const mapStyleSelect = document.getElementById('mapStyle');
-  if (mapStyleSelect) {
-    mapStyleSelect.addEventListener('change', (e) => {
-      if (map) {
-        const style = e.target.value;
-        map.setStyle(style);
-        console.log(`Map style changed to: ${style}`);
-      }
-    });
-  }
-
-  // Coordinate input
-  const coordInput = document.getElementById('coordInput');
-  if (coordInput) {
-    coordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const value = e.target.value.trim();
-        if (value && map) {
-          const parts = value.split(',').map(p => p.trim());
-          if (parts.length >= 2) {
-            const lat = parseFloat(parts[0]);
-            const lng = parseFloat(parts[1]);
-            if (!isNaN(lat) && !isNaN(lng)) {
-              map.setCamera({
-                center: [lng, lat],
-                zoom: 15
-              });
-              console.log(`Map centered on: ${lat}, ${lng}`);
-            }
-          }
-        }
-      }
-    });
-  }
-
-  // Plan tools buttons
-  const polylineBtn = document.getElementById('polylineBtn');
-  if (polylineBtn) {
-    polylineBtn.addEventListener('click', () => {
-      console.log('Polyline tool activated');
-      // Add polyline drawing logic here
-    });
-  }
-
-  const polygonBtn = document.getElementById('polygonBtn');
-  if (polygonBtn) {
-    polygonBtn.addEventListener('click', () => {
-      console.log('Polygon tool activated');
-      // Add polygon drawing logic here
-    });
-  }
-
-  const clearAllBtn = document.getElementById('clearAllBtn');
-  if (clearAllBtn) {
-    clearAllBtn.addEventListener('click', () => {
-      console.log('Clear all waypoints');
-      clearAllWaypoints();
-    });
-  }
-
-  const addWaypointBtn = document.getElementById('addWaypointBtn');
-  if (addWaypointBtn) {
-    addWaypointBtn.addEventListener('click', () => {
-      console.log('Add waypoint button clicked');
-      // This will be handled by map click events
-    });
-  }
-
-  const uploadBtn = document.getElementById('uploadBtn');
-  if (uploadBtn) {
-    uploadBtn.addEventListener('click', () => {
-      console.log('Upload mission');
-      // Add upload logic here
-    });
-  }
-
-  const downloadBtn = document.getElementById('downloadBtn');
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', () => {
-      console.log('Download mission');
-      downloadMission();
-    });
-  }
-}
-
-// Initialize sidebar collapse
+// Sidebar collapse functionality
 function initSidebarCollapse() {
-  const sidebarToggle = document.getElementById('sidebarToggleCenter');
+  console.log('Initializing sidebar collapse...');
   const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
   
   if (sidebarToggle && sidebar) {
     sidebarToggle.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       
-      // Update arrow direction
-      const svg = sidebarToggle.querySelector('svg');
-      if (svg) {
-        if (sidebar.classList.contains('collapsed')) {
-          svg.style.transform = 'rotate(180deg)';
-        } else {
-          svg.style.transform = 'rotate(0deg)';
+      // Update button icon
+      const icon = sidebarToggle.querySelector('svg');
+      if (sidebar.classList.contains('collapsed')) {
+        icon.innerHTML = '<path d="M9 18l6-6-6-6"/>'; // Right arrow
+      } else {
+        icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>'; // Left arrow
+      }
+    });
+    console.log('Sidebar collapse initialized successfully');
+  } else {
+    console.warn('Sidebar elements not found');
+  }
+}
+
+// Map click event for adding waypoints
+function initMapClickEvents() {
+  if (map) {
+    console.log('Initializing map click events...');
+    
+    // Add click event listener to the map
+    map.events.add('click', (e) => {
+      console.log('Map clicked!');
+      
+      // Check if we're in Plan view
+      if (viewManager && viewManager.getCurrentView() === 'plan') {
+        const position = e.position;
+        const lat = position[1];
+        const lon = position[0];
+        
+        console.log(`Map clicked at: ${lat}, ${lon}`);
+        
+        // Add waypoint to mission if available
+        if (mission && mission.addWaypoint) {
+          mission.addWaypoint(lat, lon, 3.5); // Default altitude 3.5m
+        } else if (mission && mission.addMarkerAndStep) {
+          // Fallback to old method
+          mission.addMarkerAndStep([lon, lat]);
+        }
+        
+        // Show feedback
+        showMapClickFeedback(lat, lon);
+        
+        // Update waypoint count
+        updateWaypointCount();
+      } else {
+        console.log('Not in Plan view, ignoring map click');
+      }
+    });
+    
+    console.log('Map click events initialized successfully');
+  } else {
+    console.warn('Map not available for click events');
+  }
+}
+
+// Show feedback when clicking on map
+function showMapClickFeedback(lat, lon) {
+  try {
+    // Create temporary marker
+    const marker = addHtmlMarker([lon, lat], createWaypointMarker());
+    
+    // Remove after 2 seconds
+    setTimeout(() => {
+      if (marker && map && map.markers) {
+        map.markers.remove(marker);
+      }
+    }, 2000);
+    
+    console.log('Waypoint marker added temporarily');
+  } catch (error) {
+    console.error('Error showing map click feedback:', error);
+  }
+}
+
+// Create waypoint marker element
+function createWaypointMarker() {
+  const div = document.createElement('div');
+  div.className = 'waypoint-marker';
+  div.innerHTML = `
+    <div class="waypoint-icon">📍</div>
+    <div class="waypoint-label">New</div>
+  `;
+  return div;
+}
+
+// Update waypoint count display
+function updateWaypointCount() {
+  try {
+    const countElement = document.getElementById('waypointCount');
+    if (countElement) {
+      // Try to get count from mission state
+      let count = 0;
+      if (mission && mission.state) {
+        if (mission.state.waypoints) {
+          count = mission.state.waypoints.length;
+        } else if (mission.state.steps) {
+          count = mission.state.steps.length;
+        } else if (mission.state.markers) {
+          count = mission.state.markers.length;
+        }
+      }
+      countElement.textContent = `${count} waypoint${count !== 1 ? 's' : ''}`;
+    }
+  } catch (error) {
+    console.error('Error updating waypoint count:', error);
+  }
+}
+
+// Update position fields in Fly view
+function updatePositionFields() {
+  const xVal = document.getElementById('xVal');
+  const yVal = document.getElementById('yVal');
+  const zVal = document.getElementById('zVal');
+  
+  if (xVal && yVal && zVal) {
+    if (mission.state.lastLocal) {
+      xVal.value = mission.state.lastLocal.x.toFixed(2);
+      yVal.value = mission.state.lastLocal.y.toFixed(2);
+      zVal.value = mission.state.lastLocal.z.toFixed(2);
+    } else if (mission.state.lastGPS) {
+      xVal.value = mission.state.lastGPS.lat.toFixed(6);
+      yVal.value = mission.state.lastGPS.lon.toFixed(6);
+      zVal.value = mission.state.lastGPS.alt.toFixed(2);
+    }
+  }
+}
+
+// Wire UI events
+function wireUI(mapInstance) {
+  console.log('Wiring UI events...');
+  map = mapInstance;
+  
+  // Initialize sidebar collapse
+  initSidebarCollapse();
+  
+  // Initialize map click events
+  initMapClickEvents();
+  
+  // Style selector
+  const styleSelector = document.getElementById('styleSelector');
+  if (styleSelector) {
+    styleSelector.addEventListener('change', (e) => {
+      if (setStyle) setStyle(e.target.value);
+    });
+    console.log('Style selector wired');
+  }
+  
+  // Coordinate input
+  const coordInput = document.getElementById('coordInput');
+  if (coordInput) {
+    coordInput.addEventListener('change', (e) => {
+      const value = e.target.value.trim();
+      if (value) {
+        const parts = value.split(',').map(p => p.trim());
+        if (parts.length >= 2) {
+          const lat = parseFloat(parts[0]);
+          const lon = parseFloat(parts[1]);
+          if (!isNaN(lat) && !isNaN(lon)) {
+            cameraTo([lon, lat], 15);
+          }
         }
       }
     });
-  }
-}
-
-// Initialize map click events for waypoints
-function initMapClickEvents() {
-  if (!map) return;
-  
-  map.events.add('click', (e) => {
-    if (viewManager && viewManager.getCurrentView() === 'plan') {
-      const position = e.position;
-      const lngLat = map.pixelToPosition(position);
-      
-      if (mission && mission.addMarkerAndStep) {
-        // Use mission system if available
-        mission.addMarkerAndStep(lngLat[0], lngLat[1]);
-      } else {
-        // Fallback to direct waypoint addition
-        addWaypoint(lngLat[0], lngLat[1]);
-      }
-      
-      // Show feedback
-      showMapClickFeedback(e.position);
-      
-      // Update waypoint count
-      try {
-        updateWaypointCount();
-      } catch (error) {
-        console.warn('Could not update waypoint count:', error);
-      }
-    }
-  });
-}
-
-// Add waypoint
-function addWaypoint(lng, lat) {
-  const waypoint = {
-    id: Date.now(),
-    lng: lng,
-    lat: lat,
-    alt: 50 // Default altitude
-  };
-  
-  waypoints.push(waypoint);
-  
-  // Create marker
-  const marker = new atlas.HtmlMarker({
-    htmlContent: createWaypointMarker(waypoint.id),
-    position: [lng, lat]
-  });
-  
-  map.markers.add(marker);
-  waypointMarkers.push(marker);
-  
-  // Update table
-  updateWaypointTable();
-  
-  console.log(`📍 Added waypoint: ${lng}, ${lat}`);
-}
-
-// Create waypoint marker HTML
-function createWaypointMarker(id) {
-  return `
-    <div class="waypoint-marker" data-waypoint-id="${id}">
-      <div class="waypoint-icon">📍</div>
-      <div class="waypoint-label">WP</div>
-    </div>
-  `;
-}
-
-// Show map click feedback
-function showMapClickFeedback(position) {
-  try {
-    // Create temporary feedback element
-    const feedback = document.createElement('div');
-    feedback.style.cssText = `
-      position: absolute;
-      left: ${position[0]}px;
-      top: ${position[1]}px;
-      width: 20px;
-      height: 20px;
-      background: #1abc9c;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 1000;
-      animation: clickFeedback 0.6s ease-out forwards;
-    `;
     
-    document.body.appendChild(feedback);
-    
-    // Remove after animation
-    setTimeout(() => {
-      if (feedback.parentNode) {
-        feedback.parentNode.removeChild(feedback);
+    coordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        coordInput.dispatchEvent(new Event('change'));
       }
-    }, 600);
-    
-  } catch (error) {
-    console.warn('Could not show click feedback:', error);
-  }
-}
-
-// Update waypoint count
-function updateWaypointCount() {
-  try {
-    const waypointCount = document.querySelector('.waypoint-count');
-    if (waypointCount) {
-      waypointCount.textContent = `${waypoints.length} waypoint${waypoints.length !== 1 ? 's' : ''}`;
-    }
-  } catch (error) {
-    console.warn('Could not update waypoint count:', error);
-  }
-}
-
-// Update waypoint table
-function updateWaypointTable() {
-  const tableBody = document.getElementById('waypointTableBody');
-  const emptyState = document.getElementById('emptyState');
-  
-  if (tableBody && emptyState) {
-    if (waypoints.length === 0) {
-      tableBody.style.display = 'none';
-      emptyState.style.display = 'block';
-    } else {
-      tableBody.style.display = 'table-row-group';
-      emptyState.style.display = 'none';
-      
-      // Clear existing rows
-      tableBody.innerHTML = '';
-      
-      // Add waypoint rows
-      waypoints.forEach((wp, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${wp.lat.toFixed(6)}</td>
-          <td>${wp.lng.toFixed(6)}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-  }
-}
-
-// Clear all waypoints
-function clearAllWaypoints() {
-  waypoints = [];
-  
-  // Remove markers from map
-  if (map && map.markers) {
-    waypointMarkers.forEach(marker => {
-      map.markers.remove(marker);
     });
-  }
-  waypointMarkers = [];
-  
-  // Update UI
-  updateWaypointCount();
-  updateWaypointTable();
-  
-  console.log('🗑️ All waypoints cleared');
-}
-
-// Download mission
-function downloadMission() {
-  if (waypoints.length === 0) {
-    alert('No waypoints to download');
-    return;
+    console.log('Coordinate input wired');
   }
   
-  const missionData = {
-    waypoints: waypoints,
-    timestamp: new Date().toISOString(),
-    version: '1.0'
-  };
+  // Map control buttons
+  const centerBtn = document.getElementById('centerOnDroneBtn');
+  if (centerBtn) {
+    centerBtn.addEventListener('click', () => {
+      if (droneMarker && map) {
+        const pos = droneMarker.getOptions()?.position;
+        if (pos && Array.isArray(pos)) {
+          cameraTo(pos, Math.max(map.getCamera().zoom, 17));
+        }
+      }
+    });
+    console.log('Center on drone button wired');
+  }
   
-  const blob = new Blob([JSON.stringify(missionData, null, 2)], {
-    type: 'application/json'
-  });
+  const satelliteBtn = document.getElementById('satelliteBtn');
+  if (satelliteBtn) {
+    satelliteBtn.addEventListener('click', () => {
+      if (setStyle) setStyle('satellite');
+    });
+    console.log('Satellite button wired');
+  }
   
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `mission_${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  
-  console.log('📥 Mission downloaded');
+  console.log('UI events wired successfully');
 }
 
-// Start the application when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
-}
+// Main boot function
+(async function boot(){
+  console.log('Starting GCS application...');
+  
+  try {
+    // 0) Khởi tạo View Manager
+    console.log('Initializing View Manager...');
+    viewManager = await initViewManager();
+    console.log('View Manager initialized successfully:', viewManager);
+
+    // 1) Bridge
+    console.log('Initializing Bridge...');
+    bridge = await initBridge({
+      onLocal: (x,y,z)=>{
+        mission.state.lastLocal = { x:+x, y:+y, z:+z };
+        if (mission.state.currentMode === 'local') updateDroneLocal();
+        updatePositionFields();
+        const altTxt = mission.state.lastLocal?.z?.toFixed(2);
+        tel.updateAlt(altTxt);
+        document.getElementById('fiAlt')?.replaceChildren(altTxt ?? '—');
+      },
+      onGPS: (lat,lon,alt)=>{
+        mission.state.lastGPS = { lat:+lat, lon:+lon, alt:+alt };
+        if (mission.state.currentMode === 'gps') updateDroneGPS();
+        updatePositionFields();
+        const altTxt = mission.state.lastGPS?.alt?.toFixed(2);
+        tel.updateAlt(altTxt);
+        document.getElementById('fiAlt')?.replaceChildren(altTxt ?? '—');
+        const fiGps = document.getElementById('fiGps');
+        if (fiGps) fiGps.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+      },
+      onBattery: (v)=>{ 
+        tel.updateBattery(v); 
+        document.getElementById('fiBatt')?.replaceChildren(v ?? '—'); 
+      },
+      onSpeed: (v)=>{ 
+        tel.updateSpeed(v);   
+        document.getElementById('fiSpd')?.replaceChildren(v ?? '—'); 
+      },
+      onMode: (mode)=>{ 
+        document.getElementById('hudMode')?.replaceChildren(mode);
+        document.getElementById('fiMode')?.replaceChildren(mode); 
+      },
+      onLink: tel.setConnected
+    });
+    console.log('Bridge initialized successfully');
+
+    // 2) Map
+    console.log('Initializing Map...');
+    const key = await getAzureKey();
+    const mapInstance = await initMap(key);
+    console.log('Map initialized successfully');
+
+    // 3) UI wires
+    console.log('Wiring UI...');
+    wireUI(mapInstance);
+    
+    if (mission && mission.bindMapInteractions) {
+      mission.bindMapInteractions();
+    }
+    
+    if (initSetupOverlay) {
+      initSetupOverlay(bridge);
+    }
+    
+    console.log('GCS application started successfully!');
+    
+  } catch (error) {
+    console.error('Failed to start GCS application:', error);
+  }
+})();

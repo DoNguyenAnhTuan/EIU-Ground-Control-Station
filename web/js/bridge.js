@@ -29,6 +29,23 @@ export function initBridge(signalHandlers) {
         land:            (...a)=> bridge.land?.(...a) || bridge.command?.('land', ...a),
         receivedTargetWaypoint: (...a)=> bridge.receivedTargetWaypoint?.(...a),
         downloadMission: (...a)=> bridge.downloadMission?.(...a),
+        
+        // Firmware management methods
+        scanBoards:      (...a)=> bridge.scanBoards?.(...a),
+        flashFirmware:   (...a)=> bridge.flashFirmware?.(...a),
+        applyAirframe:   (...a)=> bridge.applyAirframe?.(...a),
+        calibrateRadio:  (...a)=> bridge.calibrateRadio?.(...a),
+        calibrateSensors:(...a)=> bridge.calibrateSensors?.(...a),
+        
+        // Motor control methods
+        setMotorOutput:  (...a)=> bridge.setMotorOutput?.(...a),
+        stopAllMotors:   (...a)=> bridge.stopAllMotors?.(...a),
+        
+        // Parameter management methods
+        getParameters:   (...a)=> bridge.getParameters?.(...a),
+        setParameter:    (...a)=> bridge.setParameter?.(...a),
+        saveParameters:  (...a)=> bridge.saveParameters?.(...a),
+        loadParameters:  (...a)=> bridge.loadParameters?.(...a),
       };
 
       // Trả về proxy: ưu tiên api, fallback sang bridge gốc

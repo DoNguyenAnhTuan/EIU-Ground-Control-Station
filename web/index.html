@@ -52,15 +52,33 @@
     </div>
   </aside>
 
-  <!-- ========= NEW: Sidebar Toggle Button - CENTER OF DIVIDER ========= -->
-  <button id="sidebarToggleCenter" class="sidebar-toggle-center" title="Toggle Sidebar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- ========= Sidebar Toggle Button (Between Sidebar & Map) ========= -->
+  <button id="sidebarToggle" class="sidebar-toggle" title="Toggle Sidebar">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M15 18l-6-6 6-6"/>
     </svg>
   </button>
 
   <!-- ========= Main Content Area ========= -->
   <main id="main-content">
+    <!-- Top Control Bar -->
+    <div class="top-control-bar">
+      <div class="control-group">
+        <button id="connectBtn" class="control-btn control-btn--success">Connect</button>
+        <button id="disconnectBtn" class="control-btn control-btn--danger">Disconnect</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="offboardBtn" class="control-btn control-btn--warning">OFFBOARD</button>
+        <button id="landBtn" class="control-btn control-btn--secondary">LAND</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="armBtn" class="control-btn control-btn--success">ARM</button>
+        <button id="disarmBtn" class="control-btn control-btn--danger">DISARM</button>
+      </div>
+    </div>
+
     <div id="map-container">
       <!-- Map will be loaded here -->
       <div id="myMap" role="application" aria-label="Main map view">
@@ -74,7 +92,1040 @@
         </button>
       </div>
     </div>
+    
+    <!-- HUD Overlay -->
+    <div id="hud-overlay" class="hud-overlay">
+      <div class="hud-item">
+        <span class="hud-label">Mode:</span>
+        <span id="hudMode" class="hud-value">--</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Link:</span>
+        <span id="hudValue" class="hud-value">--</span>
+      </div>
+    </div>
   </main>
+
+  <!-- ========= Setup Overlay ========= -->
+  <div id="setupFull" class="setup-overlay" hidden>
+    <div class="setup-container">
+      <div class="setup-header">
+        <button id="setupBack" class="btn btn--ghost btn--sm" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+        <h2 id="setupTitle">Setup</h2>
+      </div>
+      
+      <div class="setup-content">
+        <!-- Summary Screen -->
+        <div id="setup-screen-summary" class="setup-screen">
+          <div class="card">
+            <h3>Vehicle Summary</h3>
+            <p>Below you will find a summary of the settings for your vehicle. To the left are the setup menus for each component.</p>
+            
+            <div class="summary-grid">
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Airframe</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">System ID:</span>
+                    <span class="value">1</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Airframe type:</span>
+                    <span class="value">Quadrotor x</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Vehicle:</span>
+                    <span class="value">Generic 250 Racer</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Firmware Version:</span>
+                    <span class="value">Unknown</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Radio</h4>
+                  <span class="dot warn"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">Roll:</span>
+                    <span class="value">Setup required</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Pitch:</span>
+                    <span class="value">2</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Yaw:</span>
+                    <span class="value">4</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Throttle:</span>
+                    <span class="value">3</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Sensors</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">Compass 0:</span>
+                    <span class="value">Ready</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Compass 1:</span>
+                    <span class="value">Ready</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Gyro:</span>
+                    <span class="value">Ready</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Accelerometer:</span>
+                    <span class="value">Ready</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Flight Modes</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">Mode switch:</span>
+                    <span class="value">Channel 5</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Flight Mode 1:</span>
+                    <span class="value">Stabilized</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Flight Mode 2:</span>
+                    <span class="value">Unassigned</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Flight Mode 4:</span>
+                    <span class="value">Position</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Power</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">Battery Full:</span>
+                    <span class="value">4.05 V</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Battery Empty:</span>
+                    <span class="value">3.40 V</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Number of Cells:</span>
+                    <span class="value">3</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="summary-panel">
+                <div class="summary-header">
+                  <h4>Safety</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="label">RTL min alt:</span>
+                    <span class="value">30.0 m</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">RTL home alt:</span>
+                    <span class="value">10.0 m</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">RC loss RTL:</span>
+                    <span class="value">0.5 s</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Low battery action:</span>
+                    <span class="value">Warning</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Firmware Screen -->
+        <div id="setup-screen-firmware" class="setup-screen" hidden>
+          <div class="card">
+            <div class="fw-grid">
+              <div>
+                <h3>Firmware</h3>
+                <p class="muted">QGroundControl can install PX4 Pro or ArduPilot firmware onto Pixhawk-family flight-controller boards.</p>
+                <div class="warn small">
+                  <strong>Caution:</strong> Before you start installing Firmware all USB connections to your vehicle must be disconnected (both direct or through a telemetry radio). The vehicle must not be powered by a battery.
+                </div>
+              </div>
+              <div class="fw-status">
+                <span class="dot" id="fwDot"></span>
+                <span id="fwStatus">Disconnected</span>
+                <button id="fwRefresh" class="btn btn--ghost btn--sm" type="button">Refresh</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="fw-opts">
+              <div class="row">
+                <label class="lbl">Flight Stack</label>
+                <label class="chip">
+                  <input type="radio" name="fwStack" value="px4" checked> PX4
+                </label>
+                <label class="chip">
+                  <input type="radio" name="fwStack" value="ardu"> ArduPilot
+                </label>
+                <select id="fwVehicle" class="sel" hidden>
+                  <option value="quad">Quadcopter</option>
+                  <option value="plane">Plane</option>
+                  <option value="rover">Rover</option>
+                  <option value="heli">Heli</option>
+                  <option value="sub">Sub</option>
+                </select>
+              </div>
+              <div class="row">
+                <label class="lbl">Channel</label>
+                <select id="fwChannel" class="sel">
+                  <option value="stable">Stable Release</option>
+                  <option value="beta">Beta Release</option>
+                  <option value="daily">Daily Build</option>
+                </select>
+              </div>
+              <details class="adv">
+                <summary>Advanced Settings</summary>
+                <div class="row">
+                  <label class="lbl">Custom file</label>
+                  <input type="file" id="fwFile" accept=".px4,.apj,.bin">
+                </div>
+              </details>
+              <div class="row">
+                <button id="fwStart" class="btn btn--primary" type="button" disabled>Load Firmware</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="progress">
+              <div id="fwProg" style="width:0%"></div>
+            </div>
+            <pre id="fwLog" class="log" aria-live="polite"></pre>
+          </div>
+        </div>
+
+        <!-- Airframe Screen -->
+        <div id="setup-screen-airframe" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Airframe Setup</h3>
+            <p>Select the frame class and type that matches your vehicle.</p>
+            
+            <div class="airframe-selection">
+              <div class="row">
+                <label class="lbl">Frame Class</label>
+                <select id="airframeClass" class="sel">
+                  <option value="quad">Quadcopter</option>
+                  <option value="hexa">Hexacopter</option>
+                  <option value="octa">Octocopter</option>
+                  <option value="plane">Fixed Wing</option>
+                  <option value="rover">Rover</option>
+                  <option value="sub">Submarine</option>
+                </select>
+              </div>
+              <div class="row">
+                <label class="lbl">Frame Type</label>
+                <select id="airframeType" class="sel">
+                  <option value="generic">Generic</option>
+                  <option value="racer">Racer</option>
+                  <option value="cinematic">Cinematic</option>
+                  <option value="cargo">Cargo</option>
+                </select>
+              </div>
+              <div class="row">
+                <button id="applyAirframe" class="btn btn--primary" type="button">Apply and Restart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radio Screen -->
+        <div id="setup-screen-radio" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Radio Setup</h3>
+            <p>Configure the mapping of your main transmitter attitude control sticks and calibrate all transmitter controls.</p>
+            
+            <div class="radio-calibration">
+              <div class="transmitter-diagram">
+                <div class="stick-diagram">
+                  <div class="stick stick-left">
+                    <div class="stick-center"></div>
+                    <div class="stick-label">Left Stick</div>
+                  </div>
+                  <div class="stick stick-right">
+                    <div class="stick-center"></div>
+                    <div class="stick-label">Right Stick</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="calibration-steps">
+                <div class="step active">
+                  <h4>Step 1: Center all sticks</h4>
+                  <p>Move all sticks to their center positions as shown in the diagram.</p>
+                  <button class="btn btn--primary" id="nextStep">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sensors Screen -->
+        <div id="setup-screen-sensors" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Sensor Setup</h3>
+            <p>Configure and calibrate the vehicle's compass, gyroscope, accelerometer and other sensors.</p>
+            
+            <div class="sensor-grid">
+              <div class="sensor-item" data-sensor="accelerometer">
+                <div class="sensor-header">
+                  <h4>Accelerometer</h4>
+                  <span class="dot warn"></span>
+                </div>
+                <p>Calibrate the flight controller accelerometers by positioning the vehicle in multiple orientations.</p>
+                <button class="btn btn--primary btn--sm">Calibrate</button>
+              </div>
+              
+              <div class="sensor-item" data-sensor="compass">
+                <div class="sensor-header">
+                  <h4>Compass</h4>
+                  <span class="dot warn"></span>
+                </div>
+                <p>Calibrate the compass by rotating the vehicle around all axes until calibration completes.</p>
+                <button class="btn btn--primary btn--sm">Calibrate</button>
+              </div>
+              
+              <div class="sensor-item" data-sensor="gyroscope">
+                <div class="sensor-header">
+                  <h4>Gyroscope</h4>
+                  <span class="dot ok"></span>
+                </div>
+                <p>Place the vehicle on a flat surface and keep it still for gyroscope calibration.</p>
+                <button class="btn btn--secondary btn--sm">Calibrate</button>
+              </div>
+              
+              <div class="sensor-item" data-sensor="level">
+                <div class="sensor-header">
+                  <h4>Level Horizon</h4>
+                  <span class="dot"></span>
+                </div>
+                <p>Calibrate the level horizon by placing the vehicle in its level flight orientation.</p>
+                <button class="btn btn--secondary btn--sm">Calibrate</button>
+              </div>
+              
+              <div class="sensor-item" data-sensor="pressure">
+                <div class="sensor-header">
+                  <h4>Pressure/Barometer</h4>
+                  <span class="dot"></span>
+                </div>
+                <p>Set the altitude to zero at the current pressure for accurate altitude readings.</p>
+                <button class="btn btn--secondary btn--sm">Calibrate</button>
+              </div>
+              
+              <div class="sensor-item" data-sensor="compassmot">
+                <div class="sensor-header">
+                  <h4>CompassMot (Optional)</h4>
+                  <span class="dot"></span>
+                </div>
+                <p>Calibrate compass motor interference for vehicles with significant magnetic interference.</p>
+                <button class="btn btn--secondary btn--sm">Calibrate</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h3>Sensor Settings</h3>
+            <p>Configure sensor orientations and enable/disable specific sensors.</p>
+            
+            <div class="sensor-settings">
+              <div class="row">
+                <label class="lbl">Flight Controller Orientation</label>
+                <select id="fcOrientation" class="sel">
+                  <option value="ROTATION_NONE">ROTATION_NONE (Default)</option>
+                  <option value="ROTATION_YAW_90">ROTATION_YAW_90</option>
+                  <option value="ROTATION_YAW_180">ROTATION_YAW_180</option>
+                  <option value="ROTATION_YAW_270">ROTATION_YAW_270</option>
+                  <option value="ROTATION_PITCH_180">ROTATION_PITCH_180</option>
+                  <option value="ROTATION_ROLL_180">ROTATION_ROLL_180</option>
+                </select>
+              </div>
+              
+              <div class="row">
+                <label class="lbl">Compass 1 (Primary)</label>
+                <select id="compass1Orientation" class="sel">
+                  <option value="ROTATION_NONE">ROTATION_NONE (Default)</option>
+                  <option value="ROTATION_YAW_90">ROTATION_YAW_90</option>
+                  <option value="ROTATION_YAW_180">ROTATION_YAW_180</option>
+                  <option value="ROTATION_YAW_270">ROTATION_YAW_270</option>
+                </select>
+                <label class="checkbox">
+                  <input type="checkbox" id="useCompass1" checked> Use Compass
+                </label>
+              </div>
+              
+              <div class="row">
+                <label class="lbl">Compass 2 (Secondary)</label>
+                <select id="compass2Orientation" class="sel">
+                  <option value="ROTATION_NONE">ROTATION_NONE (Default)</option>
+                  <option value="ROTATION_YAW_90">ROTATION_YAW_90</option>
+                  <option value="ROTATION_YAW_180">ROTATION_YAW_180</option>
+                  <option value="ROTATION_YAW_270">ROTATION_YAW_270</option>
+                </select>
+                <label class="checkbox">
+                  <input type="checkbox" id="useCompass2"> Use Compass
+                </label>
+              </div>
+              
+              <div class="row">
+                <button id="applySensorSettings" class="btn btn--primary">Apply Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flight Modes Screen -->
+        <div id="setup-screen-flightmodes" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Flight Modes</h3>
+            <p>Map flight modes to radio channels and configure mode switch settings.</p>
+            
+            <div class="flight-modes-config">
+              <div class="row">
+                <label class="lbl">Mode Switch Channel</label>
+                <select id="modeChannel" class="sel">
+                  <option value="5">Channel 5</option>
+                  <option value="6">Channel 6</option>
+                  <option value="7">Channel 7</option>
+                  <option value="8">Channel 8</option>
+                </select>
+              </div>
+              
+              <div class="flight-modes-grid">
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 1</h4>
+                    <span class="mode-position">Position 1</span>
+                  </div>
+                  <select id="mode1" class="sel">
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                    <option value="unassigned">Unassigned</option>
+                  </select>
+                </div>
+                
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 2</h4>
+                    <span class="mode-position">Position 2</span>
+                  </div>
+                  <select id="mode2" class="sel">
+                    <option value="unassigned">Unassigned</option>
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                  </select>
+                </div>
+                
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 3</h4>
+                    <span class="mode-position">Position 3</span>
+                  </div>
+                  <select id="mode3" class="sel">
+                    <option value="unassigned">Unassigned</option>
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                  </select>
+                </div>
+                
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 4</h4>
+                    <span class="mode-position">Position 4</span>
+                  </div>
+                  <select id="mode4" class="sel">
+                    <option value="position">Position</option>
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                    <option value="unassigned">Unassigned</option>
+                  </select>
+                </div>
+                
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 5</h4>
+                    <span class="mode-position">Position 5</span>
+                  </div>
+                  <select id="mode5" class="sel">
+                    <option value="unassigned">Unassigned</option>
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                  </select>
+                </div>
+                
+                <div class="mode-item">
+                  <div class="mode-header">
+                    <h4>Flight Mode 6</h4>
+                    <span class="mode-position">Position 6</span>
+                  </div>
+                  <select id="mode6" class="sel">
+                    <option value="altitude">Altitude</option>
+                    <option value="stabilized">Stabilized</option>
+                    <option value="althold">Altitude Hold</option>
+                    <option value="loiter">Loiter</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="auto">Auto</option>
+                    <option value="acro">Acro</option>
+                    <option value="unassigned">Unassigned</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="row">
+                <button id="applyFlightModes" class="btn btn--primary">Apply Flight Modes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Power Screen -->
+        <div id="setup-screen-power" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Power Setup</h3>
+            <p>Configure battery parameters and power system settings.</p>
+            
+            <div class="power-config">
+              <div class="battery-calibration">
+                <h4>Battery Calibration</h4>
+                
+                <div class="row">
+                  <label class="lbl">Number of Cells</label>
+                  <select id="batteryCells" class="sel">
+                    <option value="1">1S</option>
+                    <option value="2">2S</option>
+                    <option value="3" selected>3S</option>
+                    <option value="4">4S</option>
+                    <option value="6">6S</option>
+                    <option value="8">8S</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Battery Full (per cell)</label>
+                  <input type="number" id="batteryFull" class="input" value="4.05" step="0.01" min="3.0" max="4.5">
+                  <span class="unit">V</span>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Battery Empty (per cell)</label>
+                  <input type="number" id="batteryEmpty" class="input" value="3.40" step="0.01" min="2.5" max="4.0">
+                  <span class="unit">V</span>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Voltage Divider</label>
+                  <input type="number" id="voltageDivider" class="input" value="10.0" step="0.1" min="1.0" max="20.0">
+                  <button id="calcVoltageDivider" class="btn btn--secondary btn--sm">Calculate</button>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Amps per Volt</label>
+                  <input type="number" id="ampsPerVolt" class="input" value="17.0" step="0.1" min="1.0" max="100.0">
+                  <button id="calcAmpsPerVolt" class="btn btn--secondary btn--sm">Calculate</button>
+                </div>
+              </div>
+              
+              <details class="adv">
+                <summary>Advanced Power Settings</summary>
+                <div class="advanced-power">
+                  <div class="row">
+                    <label class="lbl">Voltage Drop on Full Load</label>
+                    <input type="number" id="voltageDrop" class="input" value="0.3" step="0.1" min="0.0" max="2.0">
+                    <span class="unit">V per cell</span>
+                  </div>
+                  
+                  <div class="row">
+                    <label class="lbl">ESC PWM Min</label>
+                    <input type="number" id="escPwmMin" class="input" value="1000" step="10" min="800" max="1200">
+                    <span class="unit">μs</span>
+                  </div>
+                  
+                  <div class="row">
+                    <label class="lbl">ESC PWM Max</label>
+                    <input type="number" id="escPwmMax" class="input" value="2000" step="10" min="1800" max="2200">
+                    <span class="unit">μs</span>
+                    <button id="calibrateESC" class="btn btn--warning btn--sm">Calibrate ESC</button>
+                  </div>
+                </div>
+              </details>
+              
+              <div class="row">
+                <button id="applyPowerSettings" class="btn btn--primary">Apply Power Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Motors Screen -->
+        <div id="setup-screen-motors" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Motor Setup</h3>
+            <p>Test individual motors and verify they spin in the correct direction.</p>
+            
+            <div class="motor-test-warning">
+              <div class="warn">
+                <strong>⚠️ WARNING:</strong> Remove all propellers before testing motors!
+              </div>
+            </div>
+            
+            <div class="motor-controls">
+              <div class="row">
+                <label class="checkbox">
+                  <input type="checkbox" id="propsRemoved"> Propellers are removed - Enable motor sliders
+                </label>
+              </div>
+              
+              <div class="motor-grid">
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 1</h4>
+                    <span class="motor-direction">CW</span>
+                  </div>
+                  <input type="range" id="motor1" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+                
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 2</h4>
+                    <span class="motor-direction">CCW</span>
+                  </div>
+                  <input type="range" id="motor2" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+                
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 3</h4>
+                    <span class="motor-direction">CW</span>
+                  </div>
+                  <input type="range" id="motor3" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+                
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 4</h4>
+                    <span class="motor-direction">CCW</span>
+                  </div>
+                  <input type="range" id="motor4" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+                
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 5</h4>
+                    <span class="motor-direction">CW</span>
+                  </div>
+                  <input type="range" id="motor5" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+                
+                <div class="motor-item">
+                  <div class="motor-header">
+                    <h4>Motor 6</h4>
+                    <span class="motor-direction">CCW</span>
+                  </div>
+                  <input type="range" id="motor6" class="motor-slider" min="0" max="100" value="0" disabled>
+                  <div class="motor-value">0%</div>
+                </div>
+              </div>
+              
+              <div class="motor-actions">
+                <button id="stopAllMotors" class="btn btn--danger">Stop All Motors</button>
+                <button id="testAllMotors" class="btn btn--warning">Test All Motors (3s)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety Screen -->
+        <div id="setup-screen-safety" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Safety Settings</h3>
+            <p>Configure failsafe settings and safety parameters.</p>
+            
+            <div class="safety-config">
+              <div class="safety-section">
+                <h4>Return to Launch (RTL)</h4>
+                
+                <div class="row">
+                  <label class="lbl">RTL Minimum Altitude</label>
+                  <input type="number" id="rtlMinAlt" class="input" value="30.0" step="1.0" min="0" max="100">
+                  <span class="unit">m</span>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">RTL Home Altitude</label>
+                  <input type="number" id="rtlHomeAlt" class="input" value="10.0" step="1.0" min="0" max="50">
+                  <span class="unit">m</span>
+                </div>
+              </div>
+              
+              <div class="safety-section">
+                <h4>RC Loss Failsafe</h4>
+                
+                <div class="row">
+                  <label class="lbl">RC Loss Timeout</label>
+                  <input type="number" id="rcLossTimeout" class="input" value="0.5" step="0.1" min="0.1" max="10.0">
+                  <span class="unit">s</span>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">RC Loss Action</label>
+                  <select id="rcLossAction" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="land">Land</option>
+                    <option value="hold">Hold Position</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="safety-section">
+                <h4>Link Loss Failsafe</h4>
+                
+                <div class="row">
+                  <label class="lbl">Link Loss Action</label>
+                  <select id="linkLossAction" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="land">Land</option>
+                    <option value="hold">Hold Position</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="safety-section">
+                <h4>Low Battery Failsafe</h4>
+                
+                <div class="row">
+                  <label class="lbl">Low Battery Action</label>
+                  <select id="lowBatteryAction" class="sel">
+                    <option value="warning">Warning Only</option>
+                    <option value="rtl">Return to Launch</option>
+                    <option value="land">Land</option>
+                    <option value="hold">Hold Position</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Low Battery Threshold</label>
+                  <input type="number" id="lowBatteryThreshold" class="input" value="20.0" step="1.0" min="5" max="50">
+                  <span class="unit">%</span>
+                </div>
+              </div>
+              
+              <div class="row">
+                <button id="applySafetySettings" class="btn btn--primary">Apply Safety Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tuning Screen -->
+        <div id="setup-screen-tuning" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Flight Tuning</h3>
+            <p>Adjust flight controller parameters to optimize vehicle performance.</p>
+            
+            <div class="tuning-config">
+              <div class="tuning-section">
+                <h4>Rate Controller (Roll/Pitch)</h4>
+                
+                <div class="row">
+                  <label class="lbl">Rate Roll P</label>
+                  <input type="number" id="rateRollP" class="input" value="0.15" step="0.01" min="0.01" max="1.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Rate Roll I</label>
+                  <input type="number" id="rateRollI" class="input" value="0.15" step="0.01" min="0.01" max="1.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Rate Roll D</label>
+                  <input type="number" id="rateRollD" class="input" value="0.003" step="0.001" min="0.001" max="0.1">
+                </div>
+              </div>
+              
+              <div class="tuning-section">
+                <h4>Attitude Controller (Roll/Pitch)</h4>
+                
+                <div class="row">
+                  <label class="lbl">Attitude Roll P</label>
+                  <input type="number" id="attitudeRollP" class="input" value="4.5" step="0.1" min="0.1" max="10.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Attitude Roll I</label>
+                  <input type="number" id="attitudeRollI" class="input" value="0.0" step="0.1" min="0.0" max="5.0">
+                </div>
+              </div>
+              
+              <div class="tuning-section">
+                <h4>Yaw Controller</h4>
+                
+                <div class="row">
+                  <label class="lbl">Rate Yaw P</label>
+                  <input type="number" id="rateYawP" class="input" value="0.2" step="0.01" min="0.01" max="1.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Rate Yaw I</label>
+                  <input type="number" id="rateYawI" class="input" value="0.02" step="0.01" min="0.01" max="1.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Rate Yaw D</label>
+                  <input type="number" id="rateYawD" class="input" value="0.0" step="0.001" min="0.0" max="0.1">
+                </div>
+              </div>
+              
+              <div class="tuning-section">
+                <h4>Altitude Controller</h4>
+                
+                <div class="row">
+                  <label class="lbl">Alt P</label>
+                  <input type="number" id="altP" class="input" value="1.0" step="0.1" min="0.1" max="5.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Alt I</label>
+                  <input type="number" id="altI" class="input" value="0.0" step="0.1" min="0.0" max="2.0">
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Alt D</label>
+                  <input type="number" id="altD" class="input" value="0.0" step="0.1" min="0.0" max="2.0">
+                </div>
+              </div>
+              
+              <div class="row">
+                <button id="applyTuningSettings" class="btn btn--primary">Apply Tuning Settings</button>
+                <button id="resetTuningDefaults" class="btn btn--secondary">Reset to Defaults</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Camera Screen -->
+        <div id="setup-screen-camera" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Camera & Gimbal Setup</h3>
+            <p>Configure camera settings and gimbal control parameters.</p>
+            
+            <div class="camera-config">
+              <div class="camera-section">
+                <h4>Camera Settings</h4>
+                
+                <div class="row">
+                  <label class="lbl">Camera Type</label>
+                  <select id="cameraType" class="sel">
+                    <option value="none">No Camera</option>
+                    <option value="generic">Generic Camera</option>
+                    <option value="gopro">GoPro</option>
+                    <option value="dji">DJI Camera</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Camera Trigger Mode</label>
+                  <select id="cameraTriggerMode" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="servo">Servo Trigger</option>
+                    <option value="relay">Relay Trigger</option>
+                    <option value="gopro">GoPro Control</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Photo Interval</label>
+                  <input type="number" id="photoInterval" class="input" value="5.0" step="0.5" min="0.5" max="60.0">
+                  <span class="unit">s</span>
+                </div>
+              </div>
+              
+              <div class="camera-section">
+                <h4>Gimbal Settings</h4>
+                
+                <div class="row">
+                  <label class="lbl">Gimbal Type</label>
+                  <select id="gimbalType" class="sel">
+                    <option value="none">No Gimbal</option>
+                    <option value="servo">Servo Gimbal</option>
+                    <option value="brushless">Brushless Gimbal</option>
+                    <option value="dji">DJI Gimbal</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Gimbal Roll Channel</label>
+                  <select id="gimbalRollChannel" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="7">Channel 7</option>
+                    <option value="8">Channel 8</option>
+                    <option value="9">Channel 9</option>
+                    <option value="10">Channel 10</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Gimbal Pitch Channel</label>
+                  <select id="gimbalPitchChannel" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="7">Channel 7</option>
+                    <option value="8">Channel 8</option>
+                    <option value="9">Channel 9</option>
+                    <option value="10">Channel 10</option>
+                  </select>
+                </div>
+                
+                <div class="row">
+                  <label class="lbl">Gimbal Yaw Channel</label>
+                  <select id="gimbalYawChannel" class="sel">
+                    <option value="disabled">Disabled</option>
+                    <option value="7">Channel 7</option>
+                    <option value="8">Channel 8</option>
+                    <option value="9">Channel 9</option>
+                    <option value="10">Channel 10</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="row">
+                <button id="applyCameraSettings" class="btn btn--primary">Apply Camera Settings</button>
+                <button id="testGimbal" class="btn btn--secondary">Test Gimbal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parameters Screen -->
+        <div id="setup-screen-params" class="setup-screen" hidden>
+          <div class="card">
+            <h3>Parameters</h3>
+            <p>Advanced parameter configuration for all vehicle settings.</p>
+            
+            <div class="params-config">
+              <div class="params-search">
+                <div class="row">
+                  <label class="lbl">Search Parameters</label>
+                  <input type="text" id="paramSearch" class="input" placeholder="Enter parameter name...">
+                  <button id="searchParams" class="btn btn--secondary btn--sm">Search</button>
+                </div>
+              </div>
+              
+              <div class="params-categories">
+                <h4>Parameter Categories</h4>
+                <div class="category-buttons">
+                  <button class="btn btn--ghost btn--sm category-btn active" data-category="all">All</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="flight">Flight</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="navigation">Navigation</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="sensors">Sensors</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="motors">Motors</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="radio">Radio</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="safety">Safety</button>
+                  <button class="btn btn--ghost btn--sm category-btn" data-category="advanced">Advanced</button>
+                </div>
+              </div>
+              
+              <div class="params-table-container">
+                <table class="params-table">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Value</th>
+                      <th>Units</th>
+                      <th>Description</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paramsTableBody">
+                    <!-- Parameters will be loaded here dynamically -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="params-actions">
+                <button id="refreshParams" class="btn btn--secondary">Refresh Parameters</button>
+                <button id="saveParams" class="btn btn--primary">Save Parameters</button>
+                <button id="loadParams" class="btn btn--secondary">Load Parameters</button>
+                <button id="resetParams" class="btn btn--danger">Reset to Defaults</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ========= Scripts ========= -->
   <script type="module" src="./js/main.js"></script>

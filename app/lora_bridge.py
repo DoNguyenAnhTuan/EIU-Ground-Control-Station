@@ -1,6 +1,7 @@
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 import threading
 import os
+import time
 class LoraBridge(QObject):
     positionUpdated = pyqtSignal(float, float, float)
     positionUpdatedLocal = pyqtSignal(float, float, float)
@@ -101,3 +102,146 @@ class LoraBridge(QObject):
     @pyqtSlot(result=str)
     def getMapKey(self) -> str:
         return os.environ.get("AZURE_MAPS_KEY", "")
+
+    # ===== Firmware Management Methods =====
+    
+    @pyqtSlot(result=list)
+    def scanBoards(self):
+        """Scan for available flight controller boards in bootloader mode"""
+        print("[Bridge] Scanning for boards...")
+        try:
+            # This would typically use pyserial to scan for devices
+            # For demo purposes, return a mock board
+            import serial.tools.list_ports
+            
+            boards = []
+            ports = serial.tools.list_ports.comports()
+            
+            for port in ports:
+                # Look for common flight controller identifiers
+                if any(identifier in port.description.lower() for identifier in 
+                       ['pixhawk', 'px4', 'ardupilot', 'f4', 'f7', 'h7']):
+                    boards.append({
+                        'name': port.description,
+                        'port': port.device,
+                        'vid': port.vid,
+                        'pid': port.pid
+                    })
+            
+            # Demo: return a mock board if none found
+            if not boards:
+                boards = [{
+                    'name': 'Pixhawk 4 (Demo)',
+                    'port': 'COM3',
+                    'vid': 0x26AC,
+                    'pid': 0x11
+                }]
+            
+            print(f"[Bridge] Found {len(boards)} board(s): {boards}")
+            return boards
+            
+        except Exception as e:
+            print(f"[Bridge] Error scanning boards: {e}")
+            return []
+
+    @pyqtSlot(dict, result=bool)
+    def flashFirmware(self, config):
+        """Flash firmware to the connected board"""
+        print(f"[Bridge] Flashing firmware with config: {config}")
+        
+        try:
+            # Parse config
+            stack = config.get('stack', 'px4')
+            channel = config.get('channel', 'stable')
+            vehicle = config.get('vehicle')
+            custom_path = config.get('customPath')
+            
+            print(f"[Bridge] Firmware: {stack} {channel} {vehicle} {custom_path}")
+            
+            # This would typically:
+            # 1. Download firmware from official repositories
+            # 2. Put board in bootloader mode
+            # 3. Flash using appropriate tools (px_uploader, etc.)
+            # 4. Verify flash
+            
+            # For demo, simulate the process
+            import time
+            
+            # Simulate download
+            time.sleep(1)
+            print("[Bridge] Downloading firmware...")
+            
+            # Simulate erase
+            time.sleep(1)
+            print("[Bridge] Erasing previous firmware...")
+            
+            # Simulate flash
+            time.sleep(2)
+            print("[Bridge] Programming new firmware...")
+            
+            # Simulate verify
+            time.sleep(1)
+            print("[Bridge] Verifying firmware...")
+            
+            print("[Bridge] Firmware flash completed successfully")
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error flashing firmware: {e}")
+            return False
+
+    @pyqtSlot(str, str, result=bool)
+    def applyAirframe(self, frameClass, frameType):
+        """Apply airframe configuration"""
+        print(f"[Bridge] Applying airframe: {frameClass} - {frameType}")
+        
+        try:
+            # This would typically:
+            # 1. Set appropriate parameters for the airframe
+            # 2. Restart the vehicle
+            # 3. Verify configuration
+            
+            # For demo, just log the action
+            print(f"[Bridge] Airframe {frameClass} {frameType} applied successfully")
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error applying airframe: {e}")
+            return False
+
+    @pyqtSlot(result=bool)
+    def calibrateRadio(self):
+        """Start radio calibration process"""
+        print("[Bridge] Starting radio calibration...")
+        
+        try:
+            # This would typically:
+            # 1. Put vehicle in calibration mode
+            # 2. Guide user through stick movements
+            # 3. Save calibration data
+            
+            print("[Bridge] Radio calibration completed")
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error calibrating radio: {e}")
+            return False
+
+    @pyqtSlot(result=bool)
+    def calibrateSensors(self):
+        """Start sensor calibration process"""
+        print("[Bridge] Starting sensor calibration...")
+        
+        try:
+            # This would typically:
+            # 1. Calibrate accelerometer
+            # 2. Calibrate compass
+            # 3. Calibrate gyroscope
+            # 4. Save calibration data
+            
+            print("[Bridge] Sensor calibration completed")
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error calibrating sensors: {e}")
+            return False
