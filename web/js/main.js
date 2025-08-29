@@ -87,13 +87,31 @@ async function initMap() {
 
 // Initialize UI events
 function initUIEvents() {
-  // Wire navigation buttons
+  console.log('🔌 Initializing UI events...');
+  
+  // Wire navigation buttons - FIXED CLICK FUNCTIONALITY
   const navButtons = document.querySelectorAll('.nav-btn');
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
+  console.log(`Found ${navButtons.length} navigation buttons`);
+  
+  navButtons.forEach((btn, index) => {
+    console.log(`Wiring button ${index + 1}: ${btn.getAttribute('data-view')}`);
+    
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const view = btn.getAttribute('data-view');
+      console.log(`Navigation button clicked: ${view}`);
+      
       if (viewManager) {
+        // Remove active class from all buttons
+        navButtons.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        
+        // Toggle the view
         viewManager.toggleView(view);
+        console.log(`View toggled to: ${view}`);
+      } else {
+        console.warn('ViewManager not available');
       }
     });
   });
@@ -119,6 +137,99 @@ function initUIEvents() {
         const newStyle = currentStyle === 'satellite' ? 'road' : 'satellite';
         map.setStyle(newStyle);
       }
+    });
+  }
+
+  // Wire Plan view specific buttons
+  wirePlanViewButtons();
+  
+  console.log('✅ UI events initialized successfully');
+}
+
+// Wire Plan view specific buttons
+function wirePlanViewButtons() {
+  // Map style selector
+  const mapStyleSelect = document.getElementById('mapStyle');
+  if (mapStyleSelect) {
+    mapStyleSelect.addEventListener('change', (e) => {
+      if (map) {
+        const style = e.target.value;
+        map.setStyle(style);
+        console.log(`Map style changed to: ${style}`);
+      }
+    });
+  }
+
+  // Coordinate input
+  const coordInput = document.getElementById('coordInput');
+  if (coordInput) {
+    coordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const value = e.target.value.trim();
+        if (value && map) {
+          const parts = value.split(',').map(p => p.trim());
+          if (parts.length >= 2) {
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+              map.setCamera({
+                center: [lng, lat],
+                zoom: 15
+              });
+              console.log(`Map centered on: ${lat}, ${lng}`);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Plan tools buttons
+  const polylineBtn = document.getElementById('polylineBtn');
+  if (polylineBtn) {
+    polylineBtn.addEventListener('click', () => {
+      console.log('Polyline tool activated');
+      // Add polyline drawing logic here
+    });
+  }
+
+  const polygonBtn = document.getElementById('polygonBtn');
+  if (polygonBtn) {
+    polygonBtn.addEventListener('click', () => {
+      console.log('Polygon tool activated');
+      // Add polygon drawing logic here
+    });
+  }
+
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', () => {
+      console.log('Clear all waypoints');
+      clearAllWaypoints();
+    });
+  }
+
+  const addWaypointBtn = document.getElementById('addWaypointBtn');
+  if (addWaypointBtn) {
+    addWaypointBtn.addEventListener('click', () => {
+      console.log('Add waypoint button clicked');
+      // This will be handled by map click events
+    });
+  }
+
+  const uploadBtn = document.getElementById('uploadBtn');
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => {
+      console.log('Upload mission');
+      // Add upload logic here
+    });
+  }
+
+  const downloadBtn = document.getElementById('downloadBtn');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      console.log('Download mission');
+      downloadMission();
     });
   }
 }
@@ -195,6 +306,9 @@ function addWaypoint(lng, lat) {
   map.markers.add(marker);
   waypointMarkers.push(marker);
   
+  // Update table
+  updateWaypointTable();
+  
   console.log(`📍 Added waypoint: ${lng}, ${lat}`);
 }
 
@@ -245,11 +359,89 @@ function updateWaypointCount() {
   try {
     const waypointCount = document.querySelector('.waypoint-count');
     if (waypointCount) {
-      waypointCount.textContent = waypoints.length;
+      waypointCount.textContent = `${waypoints.length} waypoint${waypoints.length !== 1 ? 's' : ''}`;
     }
   } catch (error) {
     console.warn('Could not update waypoint count:', error);
   }
+}
+
+// Update waypoint table
+function updateWaypointTable() {
+  const tableBody = document.getElementById('waypointTableBody');
+  const emptyState = document.getElementById('emptyState');
+  
+  if (tableBody && emptyState) {
+    if (waypoints.length === 0) {
+      tableBody.style.display = 'none';
+      emptyState.style.display = 'block';
+    } else {
+      tableBody.style.display = 'table-row-group';
+      emptyState.style.display = 'none';
+      
+      // Clear existing rows
+      tableBody.innerHTML = '';
+      
+      // Add waypoint rows
+      waypoints.forEach((wp, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${wp.lat.toFixed(6)}</td>
+          <td>${wp.lng.toFixed(6)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  }
+}
+
+// Clear all waypoints
+function clearAllWaypoints() {
+  waypoints = [];
+  
+  // Remove markers from map
+  if (map && map.markers) {
+    waypointMarkers.forEach(marker => {
+      map.markers.remove(marker);
+    });
+  }
+  waypointMarkers = [];
+  
+  // Update UI
+  updateWaypointCount();
+  updateWaypointTable();
+  
+  console.log('🗑️ All waypoints cleared');
+}
+
+// Download mission
+function downloadMission() {
+  if (waypoints.length === 0) {
+    alert('No waypoints to download');
+    return;
+  }
+  
+  const missionData = {
+    waypoints: waypoints,
+    timestamp: new Date().toISOString(),
+    version: '1.0'
+  };
+  
+  const blob = new Blob([JSON.stringify(missionData, null, 2)], {
+    type: 'application/json'
+  });
+  
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mission_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  console.log('📥 Mission downloaded');
 }
 
 // Start the application when DOM is ready

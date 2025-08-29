@@ -128,7 +128,7 @@ body {
   display: block;
 }
 
-/* Plan View Specific Styling - CLEAN LAYOUT */
+/* Plan View Specific Styling - BEAUTIFUL DARK THEME */
 .plan-view {
   color: #ecf0f1;
 }
@@ -210,10 +210,10 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Tools Grid - CLEAN LAYOUT */
+/* Tools Grid - BEAUTIFUL 3x2 LAYOUT */
 .tools-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -225,7 +225,7 @@ body {
   padding: 12px 8px;
   border: none;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -233,15 +233,17 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #ffffff;
+  min-height: 60px;
 }
 
 .tool-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .tool-btn--primary {
-  background: #1abc9c;
+  background: #1abc9c; /* Beautiful teal-green */
   border-color: rgba(26, 188, 156, 0.3);
 }
 
@@ -250,7 +252,7 @@ body {
 }
 
 .tool-btn--secondary {
-  background: #95a5a6; /* Dark grey như ảnh */
+  background: #95a5a6; /* Dark grey */
   border-color: rgba(149, 165, 166, 0.3);
   color: #ffffff;
 }
@@ -260,7 +262,7 @@ body {
 }
 
 .tool-btn--success {
-  background: #27ae60;
+  background: #27ae60; /* Bright green */
   border-color: rgba(39, 174, 96, 0.3);
 }
 
