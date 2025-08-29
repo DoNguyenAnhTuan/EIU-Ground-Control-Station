@@ -4,17 +4,16 @@ class ViewManager {
     this.currentView = null;
     this.views = new Map();
     this.viewContainer = document.getElementById('view-container');
-    this.init();
   }
 
   async init() {
     console.log('ViewManager: Initializing...');
     
     // Đăng ký các view
-    this.registerView('plan', './views/plan.html');
-    this.registerView('fly', './views/fly.html');
-    this.registerView('setup', './views/setup.html');
-    this.registerView('settings', './views/settings.html');
+    await this.registerView('plan', './views/plan.html');
+    await this.registerView('fly', './views/fly.html');
+    await this.registerView('setup', './views/setup.html');
+    await this.registerView('settings', './views/settings.html');
 
     // Bind navigation events
     this.bindNavigation();
@@ -262,5 +261,6 @@ class ViewManager {
 
 // Export để sử dụng trong main.js
 export function initViewManager() {
-  return new ViewManager();
+  const viewManager = new ViewManager();
+  return viewManager.init().then(() => viewManager);
 } 
