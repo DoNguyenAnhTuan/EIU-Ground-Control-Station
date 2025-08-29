@@ -2,13 +2,780 @@
 <section id="view-settings" class="view-pane">
   <div class="sb__section">
     <div class="sb__title">Settings</div>
-    <div class="menu-list">
-      <button class="menu-item" data-setting="general"><span class="dot ok"></span>General</button>
-      <button class="menu-item" data-setting="commlinks"><span class="dot"></span>Comm Links</button>
-      <button class="menu-item" data-setting="offline"><span class="dot"></span>Offline Maps</button>
-      <button class="menu-item" data-setting="mavlink"><span class="dot"></span>MAVLink</button>
-      <button class="menu-item" data-setting="console"><span class="dot"></span>Console</button>
+    <div class="menu-list" id="settingsMenu">
+      <div class="menu-item" data-setting="general"><span class="dot ok"></span><span>General</span></div>
+      <div class="menu-item" data-setting="commlinks"><span class="dot"></span><span>Comm Links</span></div>
+      <div class="menu-item" data-setting="offline"><span class="dot"></span><span>Offline Maps</span></div>
+      <div class="menu-item" data-setting="mavlink"><span class="dot"></span><span>MAVLink</span></div>
+      <div class="menu-item" data-setting="console"><span class="dot"></span><span>Console</span></div>
     </div>
     <div class="helper-note">These are application settings (no vehicle required).</div>
+    
+    <!-- Test button for debugging -->
+    <div style="margin-top: 16px;">
+      <button id="testSettingsOverlay" class="btn btn--primary">Test Settings Overlay</button>
+    </div>
   </div>
-</section> 
+</section>
+
+<!-- Settings Overlay -->
+<div id="settingsFull" class="settings-overlay" hidden>
+  <div class="settings-container">
+    <div class="settings-header">
+      <button id="settingsBack" class="btn btn--icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <h2 id="settingsTitle">General Settings</h2>
+    </div>
+    
+    <div class="settings-content">
+      <!-- General Settings -->
+      <div id="settings-screen-general" class="settings-screen">
+        <div class="card">
+          <h3>Units</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Distance:</label>
+              <select id="distanceUnit">
+                <option value="meters">Meters</option>
+                <option value="feet">Feet</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Area:</label>
+              <select id="areaUnit">
+                <option value="sqm">Square Meters</option>
+                <option value="sqft">Square Feet</option>
+                <option value="sqkm">Square Kilometers</option>
+                <option value="hectares">Hectares</option>
+                <option value="acres">Acres</option>
+                <option value="sqmi">Square Miles</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Speed:</label>
+              <select id="speedUnit">
+                <option value="mps">Meters/second</option>
+                <option value="fps">Feet/second</option>
+                <option value="mph">Miles/hour</option>
+                <option value="kph">Kilometers/hour</option>
+                <option value="knots">Knots</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Temperature:</label>
+              <select id="tempUnit">
+                <option value="celsius">Celsius</option>
+                <option value="fahrenheit">Fahrenheit</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Miscellaneous</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Language:</label>
+              <select id="language">
+                <option value="system">System (System Language)</option>
+                <option value="en">English</option>
+                <option value="vi">Vietnamese</option>
+                <option value="zh">Chinese</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Color Scheme:</label>
+              <select id="colorScheme">
+                <option value="indoor">Indoor (Dark)</option>
+                <option value="outdoor">Outdoor (Light)</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Map Provider:</label>
+              <select id="mapProvider">
+                <option value="google">Google</option>
+                <option value="mapbox">Mapbox</option>
+                <option value="bing">Bing</option>
+                <option value="airmap">Airmap</option>
+                <option value="vworld">VWorld</option>
+                <option value="eniro">Eniro</option>
+                <option value="statkart">Statkart</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Map Type:</label>
+              <select id="mapType">
+                <option value="road">Road</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="satellite">Satellite</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>UI Scaling:</label>
+              <input type="range" id="uiScaling" min="50" max="200" value="100" step="10">
+              <span id="uiScalingValue">100%</span>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="muteAudio">
+                Mute all audio output
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="checkInternet">
+                Check for Internet Connection
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoloadMissions">
+                Autoload Missions
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="clearSettings">
+                Clear all settings on next start
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Announce battery lower than:</label>
+              <input type="number" id="batteryAnnounce" min="5" max="50" value="20">%
+            </div>
+            <div class="setting-item">
+              <label>Application Load/Save Path:</label>
+              <input type="text" id="appPath" placeholder="/path/to/app/data">
+              <button class="btn btn--small" id="browsePath">Browse</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Data Persistence</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="disableDataPersistence">
+                Disable all data persistence
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="saveLogAfterFlight">
+                Save log after each flight
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="saveLogWhenNotArmed">
+                Save logs even if vehicle was not armed
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="csvLogging">
+                CSV Logging
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Fly View</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="usePreflightChecklist">
+                Use Preflight Checklist
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="enforcePreflightChecklist">
+                Enforce Preflight Checklist
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="keepMapCentered">
+                Keep Map Centered on Vehicle
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="showTelemetryReplay">
+                Show Telemetry Log Replay Status Bar
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="virtualJoystick">
+                Virtual Joystick (PX4 only)
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="verticalInstrumentPanel">
+                Use Vertical Instrument Panel
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="showAdditionalHeading">
+                Show additional heading indicators on Compass
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="lockCompassNoseUp">
+                Lock Compass Nose-Up
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Guided Minimum Altitude:</label>
+              <input type="number" id="guidedMinAlt" min="0" max="1000" value="10">m
+            </div>
+            <div class="setting-item">
+              <label>Guided Maximum Altitude:</label>
+              <input type="number" id="guidedMaxAlt" min="0" max="10000" value="500">m
+            </div>
+            <div class="setting-item">
+              <label>Go To Location Max Distance:</label>
+              <input type="number" id="gotoMaxDistance" min="100" max="10000" value="1000">m
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Plan View</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Default Mission Altitude:</label>
+              <input type="number" id="defaultMissionAlt" min="0" max="1000" value="100">m
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>AutoConnect Devices</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectPixhawk">
+                Pixhawk
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectSiK">
+                SiK Radio
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectPX4Flow">
+                PX4 Flow
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectLibrePilot">
+                LibrePilot
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectUDP">
+                UDP
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectRTK">
+                RTK GPS
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoconnectNMEA">
+                NMEA GPS Device
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>RTK GPS</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="radio" name="rtkMode" value="survey" id="rtkSurvey">
+                Perform Survey-In
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Survey-in accuracy (U-blox only):</label>
+              <input type="number" id="surveyAccuracy" min="1" max="10" value="5">m
+            </div>
+            <div class="setting-item">
+              <label>Minimum observation duration:</label>
+              <input type="number" id="surveyDuration" min="30" max="3600" value="300">s
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="radio" name="rtkMode" value="specified" id="rtkSpecified">
+                Use Specified Base Position
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Base Position Latitude:</label>
+              <input type="number" id="baseLat" step="0.000001" placeholder="0.000000">
+            </div>
+            <div class="setting-item">
+              <label>Base Position Longitude:</label>
+              <input type="number" id="baseLon" step="0.000001" placeholder="0.000000">
+            </div>
+            <div class="setting-item">
+              <label>Base Position Alt (WGS84):</label>
+              <input type="number" id="baseAlt" step="0.1" placeholder="0.0">m
+            </div>
+            <div class="setting-item">
+              <label>Base Position Accuracy:</label>
+              <input type="number" id="baseAccuracy" min="0.1" max="10" step="0.1" value="1.0">m
+            </div>
+            <div class="setting-item">
+              <button class="btn btn--primary" id="saveBasePosition">Save Current Base Position</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>ADSB Server</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="connectADSB">
+                Connect to ADSB SBS server
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Host address:</label>
+              <input type="text" id="adsbHost" placeholder="127.0.0.1">
+            </div>
+            <div class="setting-item">
+              <label>Server port:</label>
+              <input type="number" id="adsbPort" min="1" max="65535" value="30003">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Video</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Video Source:</label>
+              <select id="videoSource">
+                <option value="disabled">Video Stream Disabled</option>
+                <option value="rtsp">RTSP Video Stream</option>
+                <option value="udp264">UDP h.264 Video Stream</option>
+                <option value="udp265">UDP h.265 Video Stream</option>
+                <option value="tcp">TCP-MPEG2 Video Stream</option>
+                <option value="mpegts">MPEG-TS (h.264) Video Stream</option>
+                <option value="integrated">Integrated Camera</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>URL/Port:</label>
+              <input type="text" id="videoUrl" placeholder="rtsp://192.168.1.100:554/stream">
+            </div>
+            <div class="setting-item">
+              <label>Aspect Ratio:</label>
+              <input type="number" id="videoAspectRatio" min="0" max="10" step="0.1" value="1.7778">
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="videoDisabledWhenDisarmed">
+                Disabled When Disarmed
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="videoLowLatency">
+                Low Latency Mode
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Video Recording</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="videoAutoDelete">
+                Auto-Delete Files
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Max Storage Usage:</label>
+              <input type="number" id="videoMaxStorage" min="100" max="10000" value="1000">MB
+            </div>
+            <div class="setting-item">
+              <label>Video File Format:</label>
+              <select id="videoFormat">
+                <option value="mkv">mkv</option>
+                <option value="mov">mov</option>
+                <option value="mp4">mp4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Brand Image</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Indoor Image:</label>
+              <input type="file" id="indoorImage" accept="image/*">
+            </div>
+            <div class="setting-item">
+              <label>Outdoor Image:</label>
+              <input type="file" id="outdoorImage" accept="image/*">
+            </div>
+            <div class="setting-item">
+              <button class="btn btn--secondary" id="resetBrandImage">Reset Default Brand Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comm Links Settings -->
+      <div id="settings-screen-commlinks" class="settings-screen" hidden>
+        <div class="card">
+          <h3>Communication Links</h3>
+          <p>Configure communication links for vehicle connection.</p>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Default Connection Type:</label>
+              <select id="defaultConnection">
+                <option value="serial">Serial</option>
+                <option value="udp">UDP</option>
+                <option value="tcp">TCP</option>
+                <option value="bluetooth">Bluetooth</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Default Baud Rate:</label>
+              <select id="defaultBaudRate">
+                <option value="9600">9600</option>
+                <option value="19200">19200</option>
+                <option value="38400">38400</option>
+                <option value="57600">57600</option>
+                <option value="115200">115200</option>
+                <option value="230400">230400</option>
+                <option value="460800">460800</option>
+                <option value="921600">921600</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offline Maps Settings -->
+      <div id="settings-screen-offline" class="settings-screen" hidden>
+        <div class="card">
+          <h3>Offline Maps</h3>
+          <p>Cache map tiles for use when not connected to the Internet.</p>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <button class="btn btn--primary" id="addOfflineSet">Add New Set</button>
+            </div>
+            <div class="setting-item">
+              <label>Default Cache Size:</label>
+              <input type="number" id="defaultCacheSize" min="100" max="10000" value="1000">MB
+            </div>
+            <div class="setting-item">
+              <label>Auto-cleanup old tiles:</label>
+              <input type="checkbox" id="autoCleanupTiles">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAVLink Settings -->
+      <div id="settings-screen-mavlink" class="settings-screen" hidden>
+        <div class="card">
+          <h3>Ground Station</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>MAVLink System ID:</label>
+              <input type="number" id="mavlinkSystemId" min="1" max="255" value="255">
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="emitHeartbeat" checked>
+                Emit heartbeat
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="onlyAcceptSameProtocol" checked>
+                Only accept MAVs with the same protocol version
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="enableMavlinkForwarding">
+                Enable MAVLink forwarding
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Forward Host:</label>
+              <input type="text" id="forwardHost" placeholder="192.168.1.100">
+            </div>
+            <div class="setting-item">
+              <label>Forward Port:</label>
+              <input type="number" id="forwardPort" min="1" max="65535" value="14550">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Link Status</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Connection Status:</label>
+              <span id="connectionStatus" class="status-indicator">Disconnected</span>
+            </div>
+            <div class="setting-item">
+              <label>Message Rate:</label>
+              <span id="messageRate">0 Hz</span>
+            </div>
+            <div class="setting-item">
+              <label>Loss Rate:</label>
+              <span id="lossRate">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>MAVLink 2 Logging (PX4 only)</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="enableMavlinkLogging">
+                Enable MAVLink 2 Logging
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="autoStartLogging">
+                Auto-start logging on connection
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Log File Path:</label>
+              <input type="text" id="logFilePath" placeholder="/path/to/logs">
+              <button class="btn btn--small" id="browseLogPath">Browse</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>MAVLink 2 Log Uploads</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Email address for Log Uploads:</label>
+              <input type="email" id="logUploadEmail" placeholder="user@example.com">
+            </div>
+            <div class="setting-item">
+              <label>Default Description:</label>
+              <input type="text" id="logDefaultDescription" placeholder="Flight description">
+            </div>
+            <div class="setting-item">
+              <label>Default Upload URL:</label>
+              <input type="url" id="logUploadUrl" value="https://logs.px4.io">
+            </div>
+            <div class="setting-item">
+              <label>Video URL (Optional):</label>
+              <input type="url" id="logVideoUrl" placeholder="https://example.com/video.mp4">
+            </div>
+            <div class="setting-item">
+              <label>Wind Speed:</label>
+              <select id="logWindSpeed">
+                <option value="calm">Calm</option>
+                <option value="breeze">Breeze</option>
+                <option value="gale">Gale</option>
+                <option value="storm">Storm</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Flight Rating:</label>
+              <select id="logFlightRating">
+                <option value="crashed_pilot">Crashed (Pilot Error)</option>
+                <option value="crashed_hardware">Crashed (Software or Hardware Issue)</option>
+                <option value="unsatisfactory">Unsatisfactory</option>
+                <option value="good">Good</option>
+                <option value="great">Great</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Additional Feedback:</label>
+              <textarea id="logAdditionalFeedback" rows="3" placeholder="Detailed description of the flight or behavior"></textarea>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logPublic">
+                Make this log publicly available
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logAutoUpload">
+                Enable automatic log uploads
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logDeleteAfterUpload">
+                Delete log file after uploading
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Saved Log Files</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <button class="btn btn--primary" id="refreshLogs">Refresh</button>
+              <button class="btn btn--secondary" id="uploadSelectedLogs">Upload Selected</button>
+              <button class="btn btn--danger" id="deleteSelectedLogs">Delete Selected</button>
+            </div>
+            <div class="setting-item">
+              <div id="logFilesList" class="log-files-list">
+                <p>No log files found.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Console Settings -->
+      <div id="settings-screen-console" class="settings-screen" hidden>
+        <div class="card">
+          <h3>Console Logging</h3>
+          <p>Configure console logging for debugging QGroundControl problems.</p>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <button class="btn btn--primary" id="setLogging">Set Logging</button>
+              <button class="btn btn--secondary" id="clearConsole">Clear Console</button>
+            </div>
+            <div class="setting-item">
+              <label>Log Level:</label>
+              <select id="logLevel">
+                <option value="none">None</option>
+                <option value="error">Error</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+                <option value="debug">Debug</option>
+                <option value="verbose">Verbose</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logToFile">
+                Log to file
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>Log File Path:</label>
+              <input type="text" id="consoleLogPath" placeholder="/path/to/console.log">
+              <button class="btn btn--small" id="browseConsoleLogPath">Browse</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Common Logging Options</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logLinkManager">
+                LinkManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logMultiVehicle">
+                MultiVehicleManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logLinkManagerVerbose">
+                LinkManagerVerboseLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logFirmwareUpgrade">
+                FirmwareUpgradeLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logParameterManager">
+                ParameterManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logPlanManager">
+                PlanManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logMissionManager">
+                MissionManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logGeoFenceManager">
+                GeoFenceManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logRallyPointManager">
+                RallyPointManagerLog
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="logRadioComponent">
+                RadioComponentControllerLog
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Console Output</h3>
+          <div class="console-output" id="consoleOutput">
+            <div class="console-line">Console ready. Click "Set Logging" to start logging.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

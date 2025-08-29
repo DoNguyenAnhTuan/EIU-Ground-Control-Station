@@ -1,8 +1,16 @@
 // js/ui/setup.js - Setup overlay management and firmware loading
 export function initSetupOverlay(bridge) {
+  console.log('initSetupOverlay called with bridge:', bridge);
+  
   const overlay = document.getElementById('setupFull');
   const backBtn = document.getElementById('setupBack');
   const titleEl = document.getElementById('setupTitle');
+
+  console.log('Setup elements found:', {
+    overlay: !!overlay,
+    backBtn: !!backBtn,
+    titleEl: !!titleEl
+  });
 
   const titleMap = {
     summary: 'Summary',
@@ -25,10 +33,14 @@ export function initSetupOverlay(bridge) {
     console.log(`Opening setup screen: ${key}`);
     
     // Hide all screens
-    document.querySelectorAll('.setup-screen').forEach(s => s.hidden = true);
+    const allScreens = document.querySelectorAll('.setup-screen');
+    console.log(`Found ${allScreens.length} setup screens`);
+    allScreens.forEach(s => s.hidden = true);
     
     // Show selected screen
     const pane = document.getElementById(`setup-screen-${key}`);
+    console.log(`Looking for screen: setup-screen-${key}, found:`, !!pane);
+    
     if (!pane) {
       console.error(`Setup screen not found: ${key}`);
       return;
@@ -38,11 +50,18 @@ export function initSetupOverlay(bridge) {
     currentScreen = key;
     
     // Update title
-    titleEl.textContent = titleMap[key] || key;
+    if (titleEl) {
+      titleEl.textContent = titleMap[key] || key;
+    }
     
     // Show overlay
-    overlay.hidden = false;
-    document.body.classList.add('overlay-open');
+    if (overlay) {
+      overlay.hidden = false;
+      document.body.classList.add('overlay-open');
+      console.log('Overlay shown, body class added');
+    } else {
+      console.error('Overlay element not found!');
+    }
     
     // Initialize screen-specific logic
     initScreenLogic(key);
@@ -754,9 +773,15 @@ export function initSetupOverlay(bridge) {
 
   // Bind setup menu events
   const setupMenu = document.querySelector('#view-setup #setupMenu');
+  console.log('Setup menu found:', !!setupMenu);
+  
   if (setupMenu) {
+    console.log('Binding setup menu click events...');
     setupMenu.addEventListener('click', (e) => {
+      console.log('Setup menu clicked, target:', e.target);
       const el = e.target.closest('[data-setup]');
+      console.log('Closest data-setup element:', el);
+      
       if (!el) return;
       
       e.preventDefault();
@@ -801,4 +826,18 @@ export function initSetupOverlay(bridge) {
   });
 
   console.log('Setup overlay initialized successfully');
+  
+  // Add test button listener
+  setTimeout(() => {
+    const testBtn = document.getElementById('testSetupOverlay');
+    if (testBtn) {
+      console.log('Test button found, adding listener');
+      testBtn.addEventListener('click', () => {
+        console.log('Test button clicked, opening firmware screen');
+        openScreen('firmware');
+      });
+    } else {
+      console.log('Test button not found');
+    }
+  }, 1000);
 }

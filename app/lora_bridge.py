@@ -115,26 +115,29 @@ class LoraBridge(QObject):
             import serial.tools.list_ports
             
             boards = []
-            ports = serial.tools.list_ports.comports()
-            
-            for port in ports:
-                # Look for common flight controller identifiers
-                if any(identifier in port.description.lower() for identifier in 
-                       ['pixhawk', 'px4', 'ardupilot', 'f4', 'f7', 'h7']):
-                    boards.append({
-                        'name': port.description,
-                        'port': port.device,
-                        'vid': port.vid,
-                        'pid': port.pid
-                    })
+            try:
+                ports = serial.tools.list_ports.comports()
+                
+                for port in ports:
+                    # Look for common flight controller identifiers
+                    if any(identifier in port.description.lower() for identifier in 
+                           ['pixhawk', 'px4', 'ardupilot', 'f4', 'f7', 'h7']):
+                        boards.append({
+                            'name': port.description,
+                            'port': port.device,
+                            'vid': port.vid,
+                            'pid': port.pid
+                        })
+            except Exception as port_error:
+                print(f"[Bridge] Port scanning error: {port_error}")
             
             # Demo: return a mock board if none found
             if not boards:
                 boards = [{
                     'name': 'Pixhawk 4 (Demo)',
                     'port': 'COM3',
-                    'vid': 0x26AC,
-                    'pid': 0x11
+                    'vid': 9900,
+                    'pid': 17
                 }]
             
             print(f"[Bridge] Found {len(boards)} board(s): {boards}")
@@ -244,4 +247,137 @@ class LoraBridge(QObject):
             
         except Exception as e:
             print(f"[Bridge] Error calibrating sensors: {e}")
+            return False
+
+    # ===== Motor Control Methods =====
+    
+    @pyqtSlot(int, float)
+    def setMotorOutput(self, motorIndex, output):
+        """Set individual motor output (0-100%)"""
+        print(f"[Bridge] Setting motor {motorIndex} to {output}%")
+        
+        try:
+            # Convert percentage to PWM value (typically 1000-2000 μs)
+            pwmValue = 1000 + (output / 100.0) * 1000
+            
+            # Here you would send the motor command to the vehicle
+            if self.controller:
+                # Example: self.controller.set_motor_output(motorIndex, pwmValue)
+                print(f"[Bridge] Motor {motorIndex} PWM: {pwmValue:.0f} μs")
+            
+        except Exception as e:
+            print(f"[Bridge] Error setting motor output: {e}")
+
+    @pyqtSlot()
+    def stopAllMotors(self):
+        """Stop all motors"""
+        print("[Bridge] Stopping all motors")
+        
+        try:
+            # Here you would send stop command to all motors
+            if self.controller:
+                # Example: self.controller.stop_all_motors()
+                print("[Bridge] All motors stopped")
+            
+        except Exception as e:
+            print(f"[Bridge] Error stopping motors: {e}")
+
+    # ===== Parameter Management Methods =====
+    
+    @pyqtSlot(result=list)
+    def getParameters(self):
+        """Get all vehicle parameters"""
+        print("[Bridge] Getting vehicle parameters...")
+        
+        try:
+            # This would typically query the vehicle for all parameters
+            # For demo, return sample parameters
+            sampleParams = [
+                {"name": "SYSID_MYGCS", "value": "255", "type": "INT32"},
+                {"name": "ARMING_CHECK", "value": "1", "type": "INT32"},
+                {"name": "BATT_MONITOR", "value": "4", "type": "INT32"},
+                {"name": "BATT_CAPACITY", "value": "3300", "type": "INT32"},
+                {"name": "COMPASS_ENABLE", "value": "1", "type": "INT32"},
+                {"name": "GPS_TYPE", "value": "1", "type": "INT32"},
+                {"name": "MOT_PWM_TYPE", "value": "0", "type": "INT32"},
+                {"name": "MOT_PWM_RATE", "value": "400", "type": "INT32"},
+                {"name": "RATE_ROLL_P", "value": "0.15", "type": "FLOAT"},
+                {"name": "RATE_ROLL_I", "value": "0.15", "type": "FLOAT"},
+                {"name": "RATE_ROLL_D", "value": "0.003", "type": "FLOAT"},
+                {"name": "PILOT_SPEED_UP", "value": "500", "type": "INT32"},
+                {"name": "PILOT_SPEED_DN", "value": "300", "type": "INT32"},
+                {"name": "RTL_ALT", "value": "1000", "type": "INT32"},
+                {"name": "RTL_SPEED", "value": "500", "type": "INT32"},
+                {"name": "WPNAV_SPEED", "value": "500", "type": "INT32"},
+                {"name": "WPNAV_ACCEL", "value": "100", "type": "INT32"},
+                {"name": "RC1_MIN", "value": "1100", "type": "INT32"},
+                {"name": "RC1_MAX", "value": "1900", "type": "INT32"},
+                {"name": "RC1_TRIM", "value": "1500", "type": "INT32"},
+                {"name": "RC2_MIN", "value": "1100", "type": "INT32"},
+                {"name": "RC2_MAX", "value": "1900", "type": "INT32"},
+                {"name": "RC2_TRIM", "value": "1500", "type": "INT32"},
+                {"name": "RC3_MIN", "value": "1100", "type": "INT32"},
+                {"name": "RC3_MAX", "value": "1900", "type": "INT32"},
+                {"name": "RC3_TRIM", "value": "1500", "type": "INT32"},
+                {"name": "RC4_MIN", "value": "1100", "type": "INT32"},
+                {"name": "RC4_MAX", "value": "1900", "type": "INT32"},
+                {"name": "RC4_TRIM", "value": "1500", "type": "INT32"}
+            ]
+            
+            print(f"[Bridge] Retrieved {len(sampleParams)} parameters")
+            return sampleParams
+            
+        except Exception as e:
+            print(f"[Bridge] Error getting parameters: {e}")
+            return []
+
+    @pyqtSlot(str, str, result=bool)
+    def setParameter(self, name, value):
+        """Set a single parameter"""
+        print(f"[Bridge] Setting parameter {name} = {value}")
+        
+        try:
+            # Here you would send the parameter to the vehicle
+            if self.controller:
+                # Example: self.controller.set_parameter(name, value)
+                print(f"[Bridge] Parameter {name} set to {value}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error setting parameter: {e}")
+            return False
+
+    @pyqtSlot(result=bool)
+    def saveParameters(self):
+        """Save parameters to vehicle"""
+        print("[Bridge] Saving parameters to vehicle...")
+        
+        try:
+            # Here you would save parameters to the vehicle
+            if self.controller:
+                # Example: self.controller.save_parameters()
+                print("[Bridge] Parameters saved successfully")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error saving parameters: {e}")
+            return False
+
+    @pyqtSlot(result=bool)
+    def loadParameters(self):
+        """Load parameters from vehicle"""
+        print("[Bridge] Loading parameters from vehicle...")
+        
+        try:
+            # Here you would load parameters from the vehicle
+            if self.controller:
+                # Example: self.controller.load_parameters()
+                print("[Bridge] Parameters loaded successfully")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[Bridge] Error loading parameters: {e}")
             return False

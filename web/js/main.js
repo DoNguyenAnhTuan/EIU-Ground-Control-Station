@@ -7,6 +7,7 @@ import * as tel from "./telemetry.js";
 import * as mission from "./mission.js";
 import { enuToLatLon, llDistanceMeters, rafThrottle } from "./utils.js";
 import { initSetupOverlay } from "./ui/setup.js";
+import { initSettingsOverlay } from "./ui/settings.js";
 
 let bridge = null;
 let droneMarker = null, droneEl = null, lastLL = null;
@@ -331,7 +332,27 @@ function wireUI(mapInstance) {
     }
     
     if (initSetupOverlay) {
-      initSetupOverlay(bridge);
+      console.log('Initializing setup overlay...');
+      try {
+        initSetupOverlay(bridge);
+        console.log('Setup overlay initialized successfully');
+      } catch (error) {
+        console.error('Error initializing setup overlay:', error);
+      }
+    } else {
+      console.warn('initSetupOverlay function not found');
+    }
+
+    if (initSettingsOverlay) {
+      console.log('Initializing settings overlay...');
+      try {
+        initSettingsOverlay(bridge);
+        console.log('Settings overlay initialized successfully');
+      } catch (error) {
+        console.error('Error initializing settings overlay:', error);
+      }
+    } else {
+      console.warn('initSettingsOverlay function not found');
     }
     
     console.log('GCS application started successfully!');
