@@ -61,7 +61,7 @@ const updateDroneGPS = rafThrottle(()=>{
   }
 });
 
-// Sidebar collapse functionality
+// Sidebar collapse functionality - FIXED
 function initSidebarCollapse() {
   console.log('Initializing sidebar collapse...');
   const sidebar = document.getElementById('sidebar');
@@ -69,6 +69,7 @@ function initSidebarCollapse() {
   
   if (sidebarToggle && sidebar) {
     sidebarToggle.addEventListener('click', () => {
+      // Toggle class on sidebar instead of body
       sidebar.classList.toggle('collapsed');
       
       // Update button icon
@@ -78,6 +79,15 @@ function initSidebarCollapse() {
       } else {
         icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>'; // Left arrow
       }
+      
+      // Resize map after layout change
+      if (map && map.resize) {
+        setTimeout(() => {
+          map.resize();
+        }, 300);
+      }
+      
+      console.log('Sidebar collapsed:', sidebar.classList.contains('collapsed'));
     });
     console.log('Sidebar collapse initialized successfully');
   } else {
@@ -85,7 +95,7 @@ function initSidebarCollapse() {
   }
 }
 
-// Map click event for adding waypoints
+// Map click event for adding waypoints - FIXED
 function initMapClickEvents() {
   if (map) {
     console.log('Initializing map click events...');

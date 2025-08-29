@@ -1,266 +1,231 @@
-// view-manager.js - Quản lý việc load và chuyển đổi giữa các view
+// web/js/view-manager.js
+
 class ViewManager {
   constructor() {
-    this.currentView = null;
-    this.views = new Map();
+    this.views = {};
     this.viewContainer = document.getElementById('view-container');
-  }
-
-  async init() {
-    console.log('ViewManager: Initializing...');
-    
-    // Đăng ký các view
-    await this.registerView('plan', './views/plan.html');
-    await this.registerView('fly', './views/fly.html');
-    await this.registerView('setup', './views/setup.html');
-    await this.registerView('settings', './views/settings.html');
-
-    // Bind navigation events
-    this.bindNavigation();
-    
-    // Load view mặc định
-    await this.showView('plan');
-    
-    console.log('ViewManager: Initialization complete');
-  }
-
-  async registerView(name, htmlPath) {
-    try {
-      const response = await fetch(htmlPath);
-      const html = await response.text();
-      this.views.set(name, html);
-      console.log(`ViewManager: View ${name} registered successfully`);
-    } catch (error) {
-      console.error(`ViewManager: Failed to load view ${name}:`, error);
-      // Fallback HTML nếu load thất bại
-      this.views.set(name, `<div class="sb__section"><div class="sb__title">Error</div><p>Failed to load ${name} view</p></div>`);
+    this.currentView = null;
+    this.map = null;
+    this.bridge = null;
+    if (!this.viewContainer) {
+      console.error("View container #view-container not found!");
     }
   }
 
-  async showView(viewName) {
-    console.log(`ViewManager: Attempting to show view: ${viewName}`);
-    
-    if (!this.views.has(viewName)) {
-      console.error(`ViewManager: View ${viewName} not found`);
+  registerView(name, htmlPath, initLogicCallback = null) {
+    this.views[name] = { htmlPath, initLogicCallback, element: null, loaded: false, logicInitialized: false };
+    console.log(`View registered: ${name}`);
+  }
+
+  async loadView(name) {
+    const view = this.views[name];
+    if (!view || view.loaded) return;
+
+    try {
+      const response = await fetch(view.htmlPath);
+      if (!response.ok) {
+        throw new Error(`Failed to load view ${name}: ${response.statusText}`);
+      }
+      const html = await response.text();
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      const viewElement = tempDiv.firstElementChild;
+      if (viewElement) {
+        this.viewContainer.appendChild(viewElement);
+        view.element = viewElement;
+        view.loaded = true;
+        console.log(`View loaded: ${name}`);
+      } else {
+        console.error(`No view element found in ${view.htmlPath}`);
+      }
+    } catch (error) {
+      console.error(`Error loading view ${name}:`, error);
+    }
+  }
+
+  async loadAllViews() {
+    const loadPromises = Object.keys(this.views).map(name => this.loadView(name));
+    await Promise.all(loadPromises);
+    console.log("All views attempted to load.");
+  }
+
+  showView(name) {
+    if (this.currentView === name) {
+      // If already active, toggle it off
+      this.hideView(name);
+      this.currentView = null;
+      this.updateNavigation(null);
       return;
     }
 
-    // Ẩn tất cả views trước
     this.hideAllViews();
+    const view = this.views[name];
+    if (view && view.element) {
+      view.element.classList.add('active');
+      this.currentView = name;
+      this.updateNavigation(name);
+      console.log(`View shown: ${name}`);
+      
+      // Execute view-specific logic if available
+      if (view.initLogicCallback && !view.logicInitialized) {
+        view.initLogicCallback(view.element, this.map, this.bridge);
+        view.logicInitialized = true;
+      }
+    } else {
+      console.warn(`View ${name} not found or not loaded.`);
+    }
+  }
 
-    // Hiển thị view mới
-    this.viewContainer.innerHTML = this.views.get(viewName);
-    
-    // Cập nhật trạng thái
-    this.currentView = viewName;
-    
-    // Cập nhật navigation
-    this.updateNavigation(viewName);
-    
-    // Khởi tạo view-specific logic
-    this.initViewLogic(viewName);
-    
-    console.log(`ViewManager: Successfully switched to ${viewName} view`);
+  hideView(name) {
+    const view = this.views[name];
+    if (view && view.element) {
+      view.element.classList.remove('active');
+      console.log(`View hidden: ${name}`);
+    }
   }
 
   hideAllViews() {
-    console.log('ViewManager: Hiding all views');
-    // Ẩn tất cả views
-    this.viewContainer.innerHTML = '';
-    this.currentView = null;
-  }
-
-  toggleView(viewName) {
-    console.log(`ViewManager: Toggling view: ${viewName}, current: ${this.currentView}`);
-    
-    if (this.currentView === viewName) {
-      // Nếu đang hiện view này thì ẩn đi
-      this.hideAllViews();
-      this.updateNavigation(null);
-      console.log(`ViewManager: Hidden ${viewName} view`);
-    } else {
-      // Nếu không thì hiện view này
-      this.showView(viewName);
-    }
-  }
-
-  updateNavigation(activeView) {
-    console.log(`ViewManager: Updating navigation, active: ${activeView}`);
-    
-    // Cập nhật trạng thái active của các nav button
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.dataset.view === activeView) {
-        btn.classList.add('active');
-        console.log(`ViewManager: Set ${activeView} as active`);
+    Object.values(this.views).forEach(view => {
+      if (view.element) {
+        view.element.classList.remove('active');
       }
     });
+    this.currentView = null;
+    this.updateNavigation(null);
+    console.log("All views hidden.");
+  }
+
+  toggleView(name) {
+    if (this.currentView === name) {
+      this.hideView(name);
+      this.currentView = null;
+      this.updateNavigation(null);
+    } else {
+      this.showView(name);
+    }
   }
 
   bindNavigation() {
-    console.log('ViewManager: Binding navigation events...');
-    
-    const navButtons = document.querySelectorAll('.nav-btn');
-    console.log(`ViewManager: Found ${navButtons.length} navigation buttons`);
-    
-    navButtons.forEach((btn, index) => {
-      const viewName = btn.dataset.view;
-      console.log(`ViewManager: Binding button ${index + 1}: ${viewName}`);
-      
-      btn.addEventListener('click', async (e) => {
-        console.log(`ViewManager: Button clicked: ${viewName}`);
+    document.querySelectorAll('.nav-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        
+        const viewName = button.dataset.view;
         if (viewName) {
-          await this.toggleView(viewName);
+          console.log(`Navigation button clicked: ${viewName}`);
+          this.toggleView(viewName);
         }
       });
     });
-    
-    console.log('ViewManager: Navigation events bound');
+    console.log('Navigation buttons bound successfully');
   }
 
-  initViewLogic(viewName) {
-    console.log(`ViewManager: Initializing logic for view: ${viewName}`);
-    
-    switch (viewName) {
-      case 'plan':
-        this.initPlanView();
-        break;
-      case 'fly':
-        this.initFlyView();
-        break;
-      case 'setup':
-        this.initSetupView();
-        break;
-      case 'settings':
-        this.initSettingsView();
-        break;
-    }
+  updateNavigation(activeView) {
+    document.querySelectorAll('.nav-btn').forEach(button => {
+      if (button.dataset.view === activeView) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+    });
+    console.log(`Navigation updated. Active view: ${activeView}`);
   }
 
-  initPlanView() {
-    // Khởi tạo logic cho Plan view
-    console.log('ViewManager: Initializing Plan view...');
-    
-    // Bind các button events
-    const addStepBtn = document.getElementById('addStepBtn');
-    const sendMissionBtn = document.getElementById('sendMissionBtn');
-    const downloadMissionBtn = document.getElementById('downloadMissionBtn');
-    
-    if (addStepBtn) {
-      addStepBtn.addEventListener('click', () => {
-        console.log('Add waypoint clicked');
-        // Logic thêm waypoint
-      });
-    }
-    
-    if (sendMissionBtn) {
-      sendMissionBtn.addEventListener('click', () => {
-        console.log('Send mission clicked');
-        // Logic gửi mission
-      });
-    }
-    
-    if (downloadMissionBtn) {
-      downloadMissionBtn.addEventListener('click', () => {
-        console.log('Download mission clicked');
-        // Logic download mission
-      });
-    }
-  }
-
-  initFlyView() {
-    // Khởi tạo logic cho Fly view
-    console.log('ViewManager: Initializing Fly view...');
-    
-    // Bind các button events
-    const connectBtn = document.getElementById('connectBtn');
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    const armBtn = document.getElementById('armBtn');
-    const disarmBtn = document.getElementById('disarmBtn');
-    
-    if (connectBtn) {
-      connectBtn.addEventListener('click', () => {
-        console.log('Connect clicked');
-        // Logic kết nối
-      });
-    }
-    
-    if (disconnectBtn) {
-      disconnectBtn.addEventListener('click', () => {
-        console.log('Disconnect clicked');
-        // Logic ngắt kết nối
-      });
-    }
-    
-    if (armBtn) {
-      armBtn.addEventListener('click', () => {
-        console.log('Arm clicked');
-        // Logic arm
-      });
-    }
-    
-    if (disarmBtn) {
-      disarmBtn.addEventListener('click', () => {
-        console.log('Disarm clicked');
-        // Logic disarm
-      });
-    }
-  }
-
-  initSetupView() {
-    // Khởi tạo logic cho Setup view
-    console.log('ViewManager: Initializing Setup view...');
-    
-    // Bind setup menu events
-    const setupMenu = document.getElementById('setupMenu');
-    if (setupMenu) {
-      setupMenu.addEventListener('click', (e) => {
-        const menuItem = e.target.closest('.menu-item');
-        if (menuItem) {
-          const setupType = menuItem.dataset.setup;
-          console.log(`Setup ${setupType} clicked`);
-          // Logic xử lý setup
-        }
-      });
-    }
-  }
-
-  initSettingsView() {
-    // Khởi tạo logic cho Settings view
-    console.log('ViewManager: Initializing Settings view...');
-    
-    // Bind settings menu events
-    const settingsMenu = document.querySelector('#view-settings .menu-list');
-    if (settingsMenu) {
-      settingsMenu.addEventListener('click', (e) => {
-        const menuItem = e.target.closest('.menu-item');
-        if (menuItem) {
-          const settingType = menuItem.dataset.seting;
-          console.log(`Setting ${settingType} clicked`);
-          // Logic xử lý settings
-        }
-      });
-    }
-  }
-
-  // Method để refresh view hiện tại
-  async refreshCurrentView() {
-    if (this.currentView) {
-      await this.showView(this.currentView);
-    }
-  }
-
-  // Method để get view hiện tại
   getCurrentView() {
     return this.currentView;
   }
 }
 
-// Export để sử dụng trong main.js
-export function initViewManager() {
-  const viewManager = new ViewManager();
-  return viewManager.init().then(() => viewManager);
+let viewManagerInstance = null;
+
+export async function initViewManager(map, bridge) {
+  console.log("Initializing ViewManager...");
+  viewManagerInstance = new ViewManager();
+  viewManagerInstance.map = map;
+  viewManagerInstance.bridge = bridge;
+
+  // Register views
+  viewManagerInstance.registerView('plan', './views/plan.html', (viewElement, map, bridge) => {
+    console.log("Initializing Plan view logic...");
+    
+    // Wire Plan view specific buttons
+    const drawPolylineBtn = viewElement.querySelector('#drawPolylineBtn');
+    const drawPolygonBtn = viewElement.querySelector('#drawPolygonBtn');
+    const clearMarkersBtn = viewElement.querySelector('#clearMarkersBtn');
+    const addStepBtn = viewElement.querySelector('#addStepBtn');
+    const sendMissionBtn = viewElement.querySelector('#sendMissionBtn');
+    const downloadMissionBtn = viewElement.querySelector('#downloadMissionBtn');
+    
+    if (drawPolylineBtn) {
+      drawPolylineBtn.addEventListener('click', () => {
+        console.log('Polyline button clicked');
+        // Add polyline drawing logic here
+        if (bridge && bridge.startPolylineDrawing) {
+          bridge.startPolylineDrawing();
+        }
+      });
+    }
+    
+    if (drawPolygonBtn) {
+      drawPolygonBtn.addEventListener('click', () => {
+        console.log('Polygon button clicked');
+        // Add polygon drawing logic here
+        if (bridge && bridge.startPolygonDrawing) {
+          bridge.startPolygonDrawing();
+        }
+      });
+    }
+    
+    if (clearMarkersBtn) {
+      clearMarkersBtn.addEventListener('click', () => {
+        console.log('Clear markers button clicked');
+        // Add clear markers logic here
+        if (bridge && bridge.clearMarkers) {
+          bridge.clearMarkers();
+        }
+      });
+    }
+    
+    if (addStepBtn) {
+      addStepBtn.addEventListener('click', () => {
+        console.log('Add step button clicked');
+        // Add step logic here
+        if (bridge && bridge.addStep) {
+          bridge.addStep();
+        }
+      });
+    }
+    
+    if (sendMissionBtn) {
+      sendMissionBtn.addEventListener('click', () => {
+        console.log('Send mission button clicked');
+        // Add send mission logic here
+        if (bridge && bridge.sendMission) {
+          bridge.sendMission();
+        }
+      });
+    }
+    
+    if (downloadMissionBtn) {
+      downloadMissionBtn.addEventListener('click', () => {
+        console.log('Download mission button clicked');
+        // Add download mission logic here
+        if (bridge && bridge.downloadMission) {
+          bridge.downloadMission();
+        }
+      });
+    }
+    
+    console.log('Plan view logic initialized');
+  });
+  
+  viewManagerInstance.registerView('fly', './views/fly.html');
+  viewManagerInstance.registerView('setup', './views/setup.html');
+  viewManagerInstance.registerView('settings', './views/settings.html');
+
+  await viewManagerInstance.loadAllViews();
+  viewManagerInstance.bindNavigation();
+  viewManagerInstance.showView('plan'); // Show Plan view by default
+
+  console.log("ViewManager initialized and default view shown.");
+  return viewManagerInstance;
 } 

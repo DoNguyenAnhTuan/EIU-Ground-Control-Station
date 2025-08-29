@@ -20,6 +20,13 @@
 
   <!-- ========= Sidebar (vertical 4 views) ========= -->
   <aside id="sidebar" class="sidebar">
+    <!-- Collapse Button - TOP RIGHT -->
+    <button id="sidebarToggle" class="sidebar-toggle" title="Toggle Sidebar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+
     <!-- Logo -->
     <div class="sb-logo">
       <!-- đổi src theo logo của bạn -->
@@ -52,33 +59,8 @@
     </div>
   </aside>
 
-  <!-- ========= Sidebar Toggle Button (Between Sidebar & Map) ========= -->
-  <button id="sidebarToggle" class="sidebar-toggle" title="Toggle Sidebar">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M15 18l-6-6 6-6"/>
-    </svg>
-  </button>
-
   <!-- ========= Main Content Area ========= -->
   <main id="main-content">
-    <!-- Top Control Bar -->
-    <div class="top-control-bar">
-      <div class="control-group">
-        <button id="connectBtn" class="control-btn control-btn--success">Connect</button>
-        <button id="disconnectBtn" class="control-btn control-btn--danger">Disconnect</button>
-      </div>
-      
-      <div class="control-group">
-        <button id="offboardBtn" class="control-btn control-btn--warning">OFFBOARD</button>
-        <button id="landBtn" class="control-btn control-btn--secondary">LAND</button>
-      </div>
-      
-      <div class="control-group">
-        <button id="armBtn" class="control-btn control-btn--success">ARM</button>
-        <button id="disarmBtn" class="control-btn control-btn--danger">DISARM</button>
-      </div>
-    </div>
-
     <div id="map-container">
       <!-- Map will be loaded here -->
       <div id="myMap" role="application" aria-label="Main map view">
@@ -101,7 +83,7 @@
       </div>
       <div class="hud-item">
         <span class="hud-label">Link:</span>
-        <span id="hudValue" class="hud-value">--</span>
+        <span id="hudLink" class="hud-value">--</span>
       </div>
     </div>
   </main>

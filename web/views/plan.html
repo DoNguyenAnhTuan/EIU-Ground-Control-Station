@@ -7,7 +7,7 @@
       <h3>Map</h3>
     </div>
     
-    <div class="control-row">
+    <div class="control-group">
       <div class="control-item">
         <label for="styleSelector">Style</label>
         <select id="styleSelector" class="control-select">
@@ -31,14 +31,17 @@
       <h3>Plan Tools</h3>
     </div>
     
-    <div class="tools-row">
+    <div class="tools-grid">
       <button id="drawPolylineBtn" class="tool-btn tool-btn--primary">Polyline</button>
       <button id="drawPolygonBtn" class="tool-btn tool-btn--primary">Polygon</button>
-      <button id="clearMarkersBtn" class="tool-btn tool-btn--secondary">Remove All</button>
     </div>
     
-    <div class="tools-row">
+    <div class="tools-grid">
+      <button id="clearMarkersBtn" class="tool-btn tool-btn--secondary">Delete</button>
       <button id="addStepBtn" class="tool-btn tool-btn--success">Add Waypoint</button>
+    </div>
+    
+    <div class="tools-grid">
       <button id="sendMissionBtn" class="tool-btn tool-btn--primary">Upload</button>
       <button id="downloadMissionBtn" class="tool-btn tool-btn--secondary">Download</button>
     </div>
@@ -49,6 +52,7 @@
     <div class="section-header">
       <span class="section-icon">📋</span>
       <h3>Mission List</h3>
+      <span class="waypoint-count" id="waypointCount">0 waypoints</span>
     </div>
     
     <div class="mission-table-container">
@@ -56,9 +60,10 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Lat</th>
-            <th>Lon</th>
-            <th>Alt</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Altitude</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -69,7 +74,7 @@
       <div class="empty-state" id="emptyState">
         <div class="empty-icon">📍</div>
         <p>No waypoints added yet</p>
-        <small>Click on the map to add waypoints</small>
+        <small>Click on the map or use "Add Waypoint" to start planning</small>
       </div>
     </div>
   </div>
