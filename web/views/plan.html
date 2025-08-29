@@ -1,81 +1,99 @@
-<!-- ===== View: PLAN (mission planning) ===== -->
-<section id="view-plan" class="view-pane plan-view">
-  <!-- Map Controls -->
-  <div class="plan-section map-controls">
+<!-- Plan View -->
+<div class="view-pane plan-view" id="plan-view">
+  
+  <!-- MAP Section -->
+  <div class="plan-section">
     <div class="section-header">
-      <span class="section-icon">🗺️</span>
+      <div class="section-icon">🗺️</div>
       <h3>Map</h3>
     </div>
     
     <div class="control-group">
       <div class="control-item">
-        <label for="styleSelector">Style</label>
-        <select id="styleSelector" class="control-select">
-          <option value="road">Road</option>
+        <label>Style</label>
+        <select class="control-select" id="mapStyle">
+          <option value="hybrid">Hybrid</option>
           <option value="satellite">Satellite</option>
-          <option value="satellite_road_labels" selected>Hybrid</option>
+          <option value="road">Road</option>
         </select>
       </div>
       
       <div class="control-item">
-        <label for="coordInput">Coordinates</label>
-        <input id="coordInput" type="text" placeholder="lat, lon" class="control-input" />
+        <label>Coordinates</label>
+        <input type="text" class="control-input" placeholder="lat, lon" id="coordInput">
       </div>
     </div>
   </div>
 
-  <!-- Mission Tools -->
-  <div class="plan-section mission-tools">
+  <!-- PLAN TOOLS Section -->
+  <div class="plan-section">
     <div class="section-header">
-      <span class="section-icon">✏️</span>
+      <div class="section-icon">✏️</div>
       <h3>Plan Tools</h3>
     </div>
     
     <div class="tools-grid">
-      <button id="drawPolylineBtn" class="tool-btn tool-btn--primary">Polyline</button>
-      <button id="drawPolygonBtn" class="tool-btn tool-btn--primary">Polygon</button>
-    </div>
-    
-    <div class="tools-grid">
-      <button id="clearMarkersBtn" class="tool-btn tool-btn--secondary">Delete</button>
-      <button id="addStepBtn" class="tool-btn tool-btn--success">Add Waypoint</button>
-    </div>
-    
-    <div class="tools-grid">
-      <button id="sendMissionBtn" class="tool-btn tool-btn--primary">Upload</button>
-      <button id="downloadMissionBtn" class="tool-btn tool-btn--secondary">Download</button>
+      <button class="tool-btn tool-btn--primary" id="polylineBtn">
+        <div class="tool-icon">📏</div>
+        <span>Polyline</span>
+      </button>
+      
+      <button class="tool-btn tool-btn--primary" id="polygonBtn">
+        <div class="tool-icon">🔷</div>
+        <span>Polygon</span>
+      </button>
+      
+      <button class="tool-btn tool-btn--secondary" id="clearAllBtn">
+        <div class="tool-icon">🗑️</div>
+        <span>Delete</span>
+      </button>
+      
+      <button class="tool-btn tool-btn--success" id="addWaypointBtn">
+        <div class="tool-icon">📍</div>
+        <span>Add Waypoint</span>
+      </button>
+      
+      <button class="tool-btn tool-btn--primary" id="uploadBtn">
+        <div class="tool-icon">📤</div>
+        <span>Upload</span>
+      </button>
+      
+      <button class="tool-btn tool-btn--secondary" id="downloadBtn">
+        <div class="tool-icon">📥</div>
+        <span>Download</span>
+      </button>
     </div>
   </div>
 
-  <!-- Mission List -->
-  <div class="plan-section mission-list">
+  <!-- MISSION LIST Section -->
+  <div class="plan-section">
     <div class="section-header">
-      <span class="section-icon">📋</span>
+      <div class="section-icon">📋</div>
       <h3>Mission List</h3>
-      <span class="waypoint-count" id="waypointCount">0 waypoints</span>
+      <span class="waypoint-count">0 waypoints</span>
     </div>
     
     <div class="mission-table-container">
-      <table class="mission-table" id="wpTable" aria-label="Waypoints">
+      <table class="mission-table">
         <thead>
           <tr>
             <th>#</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Altitude</th>
-            <th>Actions</th>
+            <th>LATITUDE</th>
+            <th>LONGITUDE</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Filled by JavaScript -->
+        <tbody id="waypointTableBody">
+          <!-- Waypoints will be added here dynamically -->
         </tbody>
       </table>
       
+      <!-- Empty State -->
       <div class="empty-state" id="emptyState">
         <div class="empty-icon">📍</div>
         <p>No waypoints added yet</p>
-        <small>Click on the map or use "Add Waypoint" to start planning</small>
+        <small>Click on the map or use 'Add Waypoint' to start planning</small>
       </div>
     </div>
   </div>
-</section> 
+
+</div> 

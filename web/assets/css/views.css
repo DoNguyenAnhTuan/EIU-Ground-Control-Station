@@ -23,9 +23,9 @@ body {
   transition: width 0.3s ease;
 }
 
-/* Sidebar Collapsed State */
+/* Sidebar Collapsed State - FIXED WIDTH */
 #sidebar.collapsed {
-  width: 80px;
+  width: 80px !important;
 }
 
 #sidebar.collapsed .sb-logo-text,
@@ -42,35 +42,6 @@ body {
 #sidebar.collapsed .nav-btn .nav-ic {
   margin-bottom: 0;
   font-size: 28px;
-}
-
-/* Sidebar Toggle Button - FIXED POSITION */
-.sidebar-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(26, 188, 156, 0.2);
-  border: 1px solid rgba(26, 188, 156, 0.3);
-  color: #1abc9c;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 100;
-}
-
-.sidebar-toggle:hover {
-  background: rgba(26, 188, 156, 0.3);
-  border-color: rgba(26, 188, 156, 0.5);
-}
-
-#sidebar.collapsed .sidebar-toggle {
-  right: 20px;
-  transform: rotate(180deg);
 }
 
 /* Logo */
@@ -90,6 +61,11 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: #ecf0f1;
+}
+
+/* Sidebar Toggle Button - REMOVED FROM SIDEBAR */
+.sidebar-toggle {
+  display: none; /* Hide the old button */
 }
 
 /* Navigation */
@@ -375,6 +351,47 @@ body {
 
 #sidebar.collapsed + #main-content {
   margin-left: 80px;
+}
+
+/* NEW: Sidebar Toggle Button - CENTER OF DIVIDER */
+.sidebar-toggle-center {
+  position: fixed;
+  left: 320px; /* Position at right edge of sidebar */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1abc9c;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-toggle-center:hover {
+  background: #16a085;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.sidebar-toggle-center svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when sidebar is collapsed */
+#sidebar.collapsed ~ .sidebar-toggle-center {
+  left: 80px;
+}
+
+#sidebar.collapsed ~ .sidebar-toggle-center svg {
+  transform: rotate(180deg);
 }
 
 /* Map Container */

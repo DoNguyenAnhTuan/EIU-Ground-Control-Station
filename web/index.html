@@ -20,13 +20,6 @@
 
   <!-- ========= Sidebar (vertical 4 views) ========= -->
   <aside id="sidebar" class="sidebar">
-    <!-- Collapse Button - TOP RIGHT -->
-    <button id="sidebarToggle" class="sidebar-toggle" title="Toggle Sidebar">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M15 18l-6-6 6-6"/>
-      </svg>
-    </button>
-
     <!-- Logo -->
     <div class="sb-logo">
       <!-- đổi src theo logo của bạn -->
@@ -59,6 +52,13 @@
     </div>
   </aside>
 
+  <!-- ========= NEW: Sidebar Toggle Button - CENTER OF DIVIDER ========= -->
+  <button id="sidebarToggleCenter" class="sidebar-toggle-center" title="Toggle Sidebar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+
   <!-- ========= Main Content Area ========= -->
   <main id="main-content">
     <div id="map-container">
@@ -72,18 +72,6 @@
         <button id="satelliteBtn" class="map-fab map-fab--secondary" title="Satellite background">
           <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
         </button>
-      </div>
-    </div>
-    
-    <!-- HUD Overlay -->
-    <div id="hud-overlay" class="hud-overlay">
-      <div class="hud-item">
-        <span class="hud-label">Mode:</span>
-        <span id="hudMode" class="hud-value">--</span>
-      </div>
-      <div class="hud-item">
-        <span class="hud-label">Link:</span>
-        <span id="hudLink" class="hud-value">--</span>
       </div>
     </div>
   </main>
