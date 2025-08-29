@@ -1,0 +1,4 @@
+FROM nginx:alpine
+COPY web /usr/share/nginx/html
+# nếu dùng __CONFIG__, có thể COPY 1 file config.json và sửa index.html load nó
+EXPOSE 80

@@ -1,0 +1,59 @@
+:root{
+  --bg:#0f1216; --panel:#1b212a; --card:#202733; --muted:#93a0ad; --text:#e6ebf0;
+  --line:#2c3542; --accent:#3b82f6; --accent-2:#22c55e; --danger:#ef4444;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --sidebar-w: 340px; --steps-w: 320px; --steps-fab: 40px; --gap:16px; --hud-h:40px;
+  --ui-scale: 0.90;      /* <— chỉnh 0.85–1.00 tùy mắt */
+  --sidebar-w: 300px;    /* bớt rộng (trước 340px) */
+}
+
+/* ===== Collapsible sidebar (desktop) ===== */
+body.sidebar-collapsed { --sidebar-w: 0px; }
+body.sidebar-collapsed #sidebar{
+  transform: translateX(-100%);
+  box-shadow: none;
+}
+
+/* giữ animation mượt hơn */
+#sidebar{ transition: transform .22s ease; }
+
+/* Plan-only helpers (ẩn theo view) */
+.only-plan{ display: none !important; }
+body[data-view="plan"] .only-plan{ display: initial !important; } /* element inline/block sẽ tự dùng default */
+
+/* Base */
+*{ box-sizing:border-box; }
+html, body{
+  width:100%; height:100%; margin:0; background:var(--bg); color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  display:flex;
+}
+html{ font-size: calc(16px * var(--ui-scale)); } /* scale toàn UI nhẹ nhàng */
+#myMap{ flex:1; position:relative; height:100%; z-index:0; }
+
+/* View helper */
+.view-pane[hidden]{ display:none !important; }
+/* ===== Setup → Firmware UI ===== */
+.fw-grid{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.fw-status{display:flex;align-items:center;gap:8px}
+.fw-status .dot{width:10px;height:10px;border-radius:50%;background:#64748b}
+.fw-status .dot.ok{background:#22c55e}
+.fw-opts .row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.fw-opts .lbl{min-width:80px;opacity:.85}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#171c24;cursor:pointer}
+.sel{background:#171c24;border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--text)}
+.adv summary{cursor:pointer;margin:6px 0}
+.progress{height:10px;background:#0b1220;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.progress>#fwProg{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a)}
+.log{max-height:40vh;overflow:auto;background:#0b1220;border:1px solid var(--line);padding:10px;border-radius:8px}
+.warn.small{background:#2a1717;border:1px solid #7a2e2e;color:#fecaca;padding:6px 8px;border-radius:8px;margin-top:6px;font-size:12px}
+/* Gating theo view */
+.only-plan{ display:none }
+body[data-view="plan"] .only-plan{ display:block }
+
+.only-fly{ display:none }
+body[data-view="fly"] .only-fly{ display:block }
+
+/* Overlay Setup chắc chắn ẩn khi hidden */
+.full-overlay[hidden]{ display:none !important }
+[hidden]{ display:none !important }

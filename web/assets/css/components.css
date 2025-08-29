@@ -1,0 +1,80 @@
+/* Sidebar cards & fields */
+.sb__section{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px; margin-bottom:14px;
+}
+.sb__title{
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--muted); margin-bottom:10px;
+}
+.sb__field{
+  display:flex; align-items:center; gap:8px; background:#171c24; border:1px solid var(--line);
+  padding:10px 12px; border-radius:10px;
+}
+.sb__field input,.sb__field select{
+  flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:14px;
+}
+.sb__field .icon{ width:18px; height:18px; opacity:.85; display:grid; place-items:center; }
+
+/* Buttons & grids */
+.btn{ border:none; outline:none; cursor:pointer; border-radius:10px; padding:10px 12px; color:#fff;
+  background:#2b3240; transition:.18s; font-weight:600; }
+.btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+.btn--primary{ background:var(--accent); }
+.btn--green{ background:var(--accent-2); color:#0b2713; }
+.btn--danger{ background:var(--danger); }
+.btn--ghost{ background:#1a1f28; border:1px solid var(--line); color:var(--text); }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.xyz{ display:grid; grid-template-rows:repeat(3, auto); grid-auto-flow:column; gap:8px; }
+.xyz .sb__field{ padding:8px 10px; }
+.xyz input::placeholder{ color:#8ea1b7; }
+
+/* Waypoint table */
+.table-wrap{ overflow:auto; max-height:260px; border:1px solid var(--line); border-radius:12px; }
+.wp-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.wp-table th,.wp-table td{ padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+.wp-table thead th{ position:sticky; top:0; background:#111827; z-index:1; text-align:left; color:#9fb0c4; }
+.wp-table tr:hover{ background:#0b1220; }
+
+/* Flight Info */
+.fi-grid{ display:grid; gap:8px; }
+.fi-row{
+  display:flex; justify-content:space-between; align-items:center;
+  background:#171c24; border:1px solid var(--line); border-radius:10px; padding:8px 10px;
+}
+.fi-row span{ color:#9fb0c4; }
+
+/* Menu lists for Setup/Settings */
+.menu-list{ display:flex; flex-direction:column; gap:8px; }
+.menu-item{
+  display:flex; align-items:center; gap:10px; border:1px solid var(--line); background:#171c24; color:#d7e0ea;
+  border-radius:10px; padding:8px 10px; text-align:left; cursor:pointer;
+}
+.menu-item:hover{ background:#1e2631; }
+.dot{ width:8px; height:8px; border-radius:50%; background:#64748b; }
+.dot.ok{ background:#22c55e; } .dot.warn{ background:#f59e0b; } .dot.err{ background:#ef4444; }
+.helper-note{ color:#9fb0c4; font-size:12px; margin-top:8px; }
+
+/* Mission Steps — inner */
+.step-item{
+  background:#202733; border:1px solid #334155; border-radius:10px; padding:10px; margin-bottom:8px; box-sizing:border-box;
+}
+.step-head{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; margin-bottom:8px; }
+.step-num{
+  width:26px; height:26px; min-width:26px; line-height:26px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; background:#3b82f6;
+}
+.step-type{ flex:1; background:#171c24; border:1px solid #2b3442; border-radius:8px; color:#e6ebf0; padding:6px 8px; min-width:0; }
+.step-actions{ display:flex; gap:6px; justify-content:flex-end; }
+.icon-btn{ width:28px; height:28px; display:grid; place-items:center; border:none; border-radius:8px; background:#1a1f28; color:#cbd5e1; cursor:pointer; }
+.icon-btn:hover{ background:#243041; }
+.icon-btn.del{ color:#f87171; background:#251c1d; }
+.icon-btn.del:hover{ background:#312022; }
+.step-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.step-field{
+  display:flex; align-items:center; gap:6px; background:#171c24; border:1px solid #2b3442; border-radius:8px; padding:6px 8px;
+}
+.step-field input{ width:100%; background:transparent; border:none; outline:none; color:#e6ebf0; }
+.step-foot{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; padding-bottom:10px; }
+.step-task{ grid-column:1 / -1; background:#171c24; border:1px solid #2b3442; border-radius:8px; padding:6px 8px; color:#e6ebf0; }

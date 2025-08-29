@@ -1,0 +1,100 @@
+<!-- ===== View: PLAN (mission planning) ===== -->
+<section id="view-plan" class="view-pane plan-view">
+  <!-- Map Controls -->
+  <div class="plan-section map-controls">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h3>Map Controls</h3>
+    </div>
+    
+    <div class="control-group">
+      <div class="control-item">
+        <label for="styleSelector">Map Style</label>
+        <select id="styleSelector" class="control-select">
+          <option value="road">Road</option>
+          <option value="satellite">Satellite</option>
+          <option value="satellite_road_labels" selected>Hybrid</option>
+        </select>
+      </div>
+      
+      <div class="control-item">
+        <label for="coordInput">Coordinates</label>
+        <input id="coordInput" type="text" placeholder="Enter lat, lon" class="control-input" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Tools -->
+  <div class="plan-section mission-tools">
+    <div class="section-header">
+      <span class="section-icon">✏️</span>
+      <h3>Mission Tools</h3>
+    </div>
+    
+    <div class="tools-grid">
+      <button id="drawPolylineBtn" class="tool-btn tool-btn--primary">
+        <span class="tool-icon">📏</span>
+        <span>Polyline</span>
+      </button>
+      
+      <button id="drawPolygonBtn" class="tool-btn tool-btn--primary">
+        <span class="tool-icon">🔷</span>
+        <span>Polygon</span>
+      </button>
+      
+      <button id="clearMarkersBtn" class="tool-btn tool-btn--secondary">
+        <span class="tool-icon">🗑️</span>
+        <span>Clear All</span>
+      </button>
+    </div>
+    
+    <div class="tools-grid">
+      <button id="addStepBtn" class="tool-btn tool-btn--success">
+        <span class="tool-icon">➕</span>
+        <span>Add Waypoint</span>
+      </button>
+      
+      <button id="sendMissionBtn" class="tool-btn tool-btn--primary">
+        <span class="tool-icon">📤</span>
+        <span>Upload Mission</span>
+      </button>
+      
+      <button id="downloadMissionBtn" class="tool-btn tool-btn--secondary">
+        <span class="tool-icon">📥</span>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mission List -->
+  <div class="plan-section mission-list">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h3>Mission Waypoints</h3>
+      <span class="waypoint-count" id="waypointCount">0 waypoints</span>
+    </div>
+    
+    <div class="mission-table-container">
+      <table class="mission-table" id="wpTable" aria-label="Waypoints">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Altitude</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filled by JavaScript -->
+        </tbody>
+      </table>
+      
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📍</div>
+        <p>No waypoints added yet</p>
+        <small>Click on the map or use "Add Waypoint" to start planning</small>
+      </div>
+    </div>
+  </div>
+</section> 

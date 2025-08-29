@@ -1,0 +1,712 @@
+/* views.css - Styling cho các view components */
+
+/* Sidebar Collapse Functionality */
+.sidebar {
+  position: relative;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed .sb-logo-text,
+.sidebar.collapsed .nav-btn span:not(.nav-ic),
+.sidebar.collapsed #view-container {
+  display: none;
+}
+
+.sidebar.collapsed .nav-btn {
+  padding: 16px 8px;
+  justify-content: center;
+}
+
+.sidebar.collapsed .nav-btn .nav-ic {
+  margin-bottom: 0;
+  font-size: 28px;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(26, 188, 156, 0.2);
+  border: 1px solid rgba(26, 188, 156, 0.3);
+  color: #1abc9c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(26, 188, 156, 0.3);
+  border-color: rgba(26, 188, 156, 0.5);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  right: 20px;
+  transform: rotate(180deg);
+}
+
+/* Waypoint Marker Styling */
+.waypoint-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(26, 188, 156, 0.9);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: waypointPulse 0.6s ease-out;
+}
+
+.waypoint-icon {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.waypoint-label {
+  font-size: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+@keyframes waypointPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* View Container */
+#view-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* View Pane */
+.view-pane {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Plan View Specific Styling - Restored Original Style */
+.plan-view {
+  max-width: 100%;
+}
+
+/* Plan Sections - Original Style */
+.plan-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+}
+
+.waypoint-count {
+  background: rgba(26, 188, 156, 0.2);
+  color: #1abc9c;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Control Groups */
+.control-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-item label {
+  color: #9bb0c7;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.control-select,
+.control-input {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.control-select:focus,
+.control-input:focus {
+  outline: none;
+  border-color: #1abc9c;
+  box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Tools Grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.tool-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tool-btn--primary {
+  background: #1abc9c;
+  border-color: rgba(26, 188, 156, 0.3);
+}
+
+.tool-btn--primary:hover {
+  background: #16a085;
+}
+
+.tool-btn--secondary {
+  background: rgba(155, 176, 199, 0.1);
+  border-color: rgba(155, 176, 199, 0.2);
+  color: #9bb0c7;
+}
+
+.tool-btn--secondary:hover {
+  background: rgba(155, 176, 199, 0.2);
+  border-color: rgba(155, 176, 199, 0.3);
+  color: #ffffff;
+}
+
+.tool-btn--success {
+  background: #27ae60;
+  border-color: rgba(39, 174, 96, 0.3);
+}
+
+.tool-btn--success:hover {
+  background: #229954;
+}
+
+.tool-icon {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+/* Mission Table */
+.mission-table-container {
+  position: relative;
+  min-height: 150px;
+}
+
+.mission-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mission-table th,
+.mission-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mission-table th {
+  background: rgba(26, 188, 156, 0.1);
+  color: #1abc9c;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mission-table td {
+  color: #dbe3ec;
+}
+
+.mission-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.mission-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9bb0c7;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.empty-state small {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px 12px;
+  margin-bottom: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #9bb0c7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  background: rgba(155, 176, 199, 0.1);
+  color: #ffffff;
+}
+
+.nav-btn.active {
+  background: rgba(26, 188, 156, 0.2);
+  color: #1abc9c;
+  border-left: 3px solid #1abc9c;
+}
+
+.nav-btn--xl {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-ic {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+/* Sidebar Sections */
+.sb__section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sb__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sb__field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.sb__field input,
+.sb__field select {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.sb__field input:focus,
+.sb__field select:focus {
+  outline: none;
+  border-color: #1abc9c;
+  box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn--primary {
+  background: #1abc9c;
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: #16a085;
+}
+
+.btn--secondary {
+  background: #3498db;
+  color: #ffffff;
+}
+
+.btn--secondary:hover {
+  background: #2980b9;
+}
+
+.btn--success {
+  background: #27ae60;
+  color: #ffffff;
+}
+
+.btn--success:hover {
+  background: #229954;
+}
+
+.btn--danger {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+.btn--danger:hover {
+  background: #c0392b;
+}
+
+.btn--warning {
+  background: #f39c12;
+  color: #ffffff;
+}
+
+.btn--warning:hover {
+  background: #e67e22;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #9bb0c7;
+  border: 1px solid rgba(155, 176, 199, 0.3);
+}
+
+.btn--ghost:hover {
+  background: rgba(155, 176, 199, 0.1);
+  border-color: rgba(155, 176, 199, 0.5);
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Grid Layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+/* Flight Info Grid */
+.fi-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.fi-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fi-row:last-child {
+  border-bottom: none;
+}
+
+.fi-row span {
+  color: #9bb0c7;
+  font-size: 14px;
+}
+
+.fi-row strong {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Position XYZ */
+.xyz {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+/* Menu Lists */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background: #9bb0c7;
+}
+
+.menu-item .dot.ok {
+  background: #27ae60;
+}
+
+.menu-item .dot.warn {
+  background: #f39c12;
+}
+
+.menu-item .dot.error {
+  background: #e74c3c;
+}
+
+/* Helper Notes */
+.helper-note {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(155, 176, 199, 0.1);
+  border-radius: 4px;
+  color: #9bb0c7;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Table Styles */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.wp-table th,
+.wp-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wp-table th {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.wp-table td {
+  color: #9bb0c7;
+}
+
+.wp-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Icons */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #9bb0c7;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .xyz {
+    grid-template-columns: 1fr;
+  }
+  
+  .sb__field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .sb__field input,
+  .sb__field select {
+    width: 100%;
+  }
+  
+  .control-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Theme Enhancements */
+.view-pane {
+  background: transparent;
+}
+
+/* HUD Overlay */
+.hud-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 16px;
+  color: #ffffff;
+  z-index: 1000;
+}
+
+.hud-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.hud-item:last-child {
+  margin-bottom: 0;
+}
+
+.hud-label {
+  color: #9bb0c7;
+  font-size: 12px;
+  margin-right: 16px;
+}
+
+.hud-value {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}

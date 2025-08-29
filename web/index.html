@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>EIU FABLAB - GCS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <!-- Vendor (local) -->
+  <link rel="stylesheet" href="./assets/vendor/atlas.min.css" />
+  <script src="./assets/vendor/atlas.min.js"></script>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="./assets/css/styles.css?v=6" />
+  <link rel="stylesheet" href="./assets/css/views.css?v=1" />
+
+  <!-- Qt webchannel -->
+  <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+  <!-- ========= Sidebar (vertical 4 views) ========= -->
+  <aside id="sidebar" class="sidebar">
+    <!-- Collapse Button - TOP RIGHT -->
+    <button id="sidebarToggle" class="sidebar-toggle" title="Toggle Sidebar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <!-- Logo -->
+    <div class="sb-logo">
+      <!-- đổi src theo logo của bạn -->
+      <img src="./assets/img/logo-fablab.png" alt="EIU FABLAB" />
+      <div class="sb-logo-text">
+        <strong>EIU FABLAB</strong>
+        <span>Ground Control</span>
+      </div>
+    </div>
+
+    <!-- 4 tính năng: to & dọc -->
+    <div class="nav-rail nav-rail--xl">
+      <button class="nav-btn nav-btn--xl" data-view="plan">
+        <span class="nav-ic">🗺️</span> <span>Plan</span>
+      </button>
+      <button class="nav-btn nav-btn--xl" data-view="fly">
+        <span class="nav-ic">✈️</span> <span>Fly</span>
+      </button>
+      <button class="nav-btn nav-btn--xl" data-view="setup">
+        <span class="nav-ic">🛠️</span> <span>Setup</span>
+      </button>
+      <button class="nav-btn nav-btn--xl" data-view="settings">
+        <span class="nav-ic">⚙️</span> <span>Settings</span>
+      </button>
+    </div>
+
+    <!-- ===== Dynamic View Container ===== -->
+    <div id="view-container">
+      <!-- Views will be loaded here dynamically -->
+    </div>
+  </aside>
+
+  <!-- ========= Main Content Area ========= -->
+  <main id="main-content">
+    <div id="map-container">
+      <!-- Map will be loaded here -->
+    </div>
+    
+    <!-- HUD Overlay -->
+    <div id="hud-overlay" class="hud-overlay">
+      <div class="hud-item">
+        <span class="hud-label">Mode:</span>
+        <span id="hudMode" class="hud-value">--</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Link:</span>
+        <span id="hudLink" class="hud-value">--</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========= Scripts ========= -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

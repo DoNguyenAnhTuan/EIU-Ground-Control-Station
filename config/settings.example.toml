@@ -1,0 +1,13 @@
+# Serial connection
+port = "/dev/ttyUSB1"
+baudrate = 9600
+
+# Map origin (ENU <-> LatLon)
+origin_lat = 11.052939
+origin_lon = 106.666123
+
+# Azure Maps API Key (đặt ENV AZURE_MAPS_KEY ưu tiên hơn)
+azure_maps_key = "REPLACE_ME_WITH_REAL_KEY"
+
+# Heartbeat
+hb_timeout = 6.0
